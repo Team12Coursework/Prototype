@@ -11,7 +11,7 @@ class Config:
 
     # this definitely needs to be changed to use
     # an .env file
-    POSTGRES_PASSWORD: str = 'postgres'
+    POSTGRES_PASSWORD: str = 'cc123'
 
     SQLALCHEMY_DATABASE_URI: str = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
