@@ -1,18 +1,25 @@
+import os
 import secrets
 from typing import Tuple
+
+import dotenv
+
+# load the .env file to get the postgres uri
+dotenv.load_dotenv()
+
 
 class Config:
     SECRET_KEY: str = secrets.token_urlsafe(32)
 
-    POSTGRES_HOST: str = 'localhost'
-    POSTGRES_USER: str = 'postgres'
-    POSTGRES_PORT: int = 5432
-    POSTGRES_DB: str = 'character_connect'
+class TestingConfig(Config):
+    SQLALCHEMY_DATABASE_URI: str = os.getenv('TESTING_DATABASE_URI')
 
-    # this definitely needs to be changed to use
-    # an .env file
-    POSTGRES_PASSWORD: str = 'cc123'
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI: str = os.getenv('PRODUCTION_DATABASE_URI')
 
-    SQLALCHEMY_DATABASE_URI: str = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
-config: Config = Config()
+# global object pattern will create the correct config at import time
+if os.getenv('DEBUG') == '1':
+    config: Config = TestingConfig()
+else:
+    config: Config = ProductionConfig()
