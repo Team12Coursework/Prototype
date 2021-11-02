@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy import Integer, ForeignKey
+from sqlalchemy import Integer, ForeignKey, Column, String
 
 from .base import Base
 
@@ -10,10 +10,12 @@ class DictionaryMapping(Base):
     themes and words.
     """
 
-    @declared_attr
-    def word_id(cls) -> Column:
-        return Column(String, ForeignKey('words_tab.id'), primary_key=True)
+    __tablename__: str = 'dictionary_mapping_tab'
 
     @declared_attr
-    def dictionary_id(cls) -> Column:
-        return Column(Integer, ForeignKey('dictionary_tab.id'), primary_key=True)
+    def word_id(cls) -> Column:
+        return Column(String, ForeignKey('words_tab.word'), primary_key=True)
+
+    @declared_attr
+    def theme_id(cls) -> Column:
+        return Column(Integer, ForeignKey('themes_tab.id'), primary_key=True)
