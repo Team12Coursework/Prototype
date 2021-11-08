@@ -1,16 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import MainMenu from '../views/MainMenu.vue'
 
 const routes = [
     {
         path: '/',
-        name: 'Home',
-        component: Home
+        name: 'MainMenu',
+        component: MainMenu
     },
     {
         path: "/play",
         name: "Play",
         component: () => import("@/views/Game.vue"),
+    },
+    {
+        path: "/leaderboard",
+        name: "Leaderboard",
+        component: () => import("@/components/Leaderboard.vue"),
     },
     {
         path: "/settings",
@@ -26,6 +31,17 @@ const routes = [
         path: "/register",
         name: "Register",
         component: () => import("@/views/Register.vue"),
+    },
+    {
+        path: "/gamemodes",
+        name: "GameModes",
+        component: () => import("@/views/GameModes.vue"),
+
+    },
+    {
+        path: "/gameover",
+        name: "GameOver",
+        component: () => import("@/views/GameOver.vue"),
     },
     {
         path: '/:catchAll(.*)',

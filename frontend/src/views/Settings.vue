@@ -1,5 +1,7 @@
 <template>
-    <basic-layout>
+    <navbar />
+
+    <main class="p-12">
         <h1 class="font-bold text-3xl text-gray-900">Settings</h1>
 
         <div class="mt-4 flex border-b space-x-8 text-gray-600 font-semibold">
@@ -29,16 +31,16 @@
                 <p class="font-semibold text-purple-600">Update</p>
             </div>
         </div>
-    </basic-layout>
+    </main>
 </template>
 
 <script>
-import BasicLayout from "@/layouts/BasicLayout.vue";
+import Navbar from "@/components/Navbar.vue";
 
 export default {
     name: "Home",
     components: {
-        BasicLayout,
+        Navbar
     },
 
     data() {
