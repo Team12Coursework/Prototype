@@ -8,6 +8,7 @@ from passlib.context import CryptContext
 
 from app.models.users import User
 from app.core.config import config
+from app.api.dependencies import get_database
 
 router = APIRouter()
 
