@@ -19,11 +19,12 @@ import Chatbox from "@/components/Chatbox.vue";
 
 export default {
     name: "Home",
+
     components: {
         BasicLayout,
         TileHolder,
         GameBoard,
         Chatbox,
-    }
+    },
 };
 </script>
