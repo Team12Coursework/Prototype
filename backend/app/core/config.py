@@ -10,6 +10,7 @@ dotenv.load_dotenv()
 
 class Config:
     SECRET_KEY: str = secrets.token_urlsafe(32)
+    ALGORITHM: str = 'HS256'
 
 class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI: str = os.getenv('TESTING_DATABASE_URI')
