@@ -17,24 +17,6 @@ export default {
     }
 
     },
-
-methods: {
-
-    multiply() {
-    for (let j=0; j < 15; j++) {
-        if (j % 2 == 0) {
-            this.isMultiply = true;
-        } else {
-            this.isMultiply = false;
-        }
-    }
-
-    let isMultiply = false;
-    this.$emit("multiplier", isMultiply)
-
-    },
-
-},
 }
 
 </script>
