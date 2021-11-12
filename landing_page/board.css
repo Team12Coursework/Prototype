@@ -1,0 +1,73 @@
+/* SCRABBLE BOARD */
+
+main {
+  background: #454545;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bottom-footer {
+	width: 100%;
+	display: inline-block;
+	background-color: #000000;
+	text-align:center;
+	color:#454545 ;
+}
+
+.board {
+  position: relative;
+  bottom: 200px;
+  max-width: 800px;
+  margin: auto;
+  border-radius: 3px;
+  border-left: 5px solid #aaa;
+  border-bottom: 5px solid #656565;
+  background: #fff;
+
+  display: grid;
+  grid-template-columns: repeat(15, 50px);
+  grid-template-rows: repeat(15, 50px);
+  grid-gap: 3px;
+
+  transform: perspective(600px) rotateX(70deg) rotateZ(-45deg) scale(0.7);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.grid-square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: 700 10px "Helvetica";
+  background: #efece1;
+  text-align: center;
+  box-shadow: inset 0 1px 5px -2px rgba(0, 0, 0, 0.2),
+    inset 1px -2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+.triple-word {
+  background: #fe704d;
+}
+
+.double-word {
+  background: rgba(254, 112, 77, 0.4);
+}
+
+.triple-letter {
+  background: #0493b5;
+}
+
+.double-letter {
+  background: rgba(4, 147, 181, 0.4);
+}
+
+.star-square {
+  background: rgba(254, 112, 77, 0.4);
+}
+
+.fa-star {
+  font-size: 25px;
+}
