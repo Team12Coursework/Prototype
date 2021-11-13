@@ -1,13 +1,10 @@
 <template>
-    <span class="go-back">
-        <button @click="goBack">Back</button>
-
+    <span class="p-2 rounded text-white bg-blue-500 border-2 border-blue-500 hover:text-blue-500 hover:bg-white">
+        <button @click="goBack">Return</button>
     </span>
-    
 </template>
 
 <script>
-
 export default{
     methods: {
         goBack() {
@@ -15,19 +12,4 @@ export default{
         }
     }
 }
-
 </script>
-
-
-<style scoped>
-.go-back{
-    display: flex;
-    cursor: pointer;
-}
-
-button{
-    background-color: lightgrey;
-    border: 0;
-}
-
-</style>

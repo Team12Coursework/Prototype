@@ -1,23 +1,17 @@
 <template>
     <navbar/>
 
-    <main class="flex justify-center w-full">
-        <div class="w-full max-w-7xl flex flex-col space-y-12">
-            <div>
-                <h1 class="text-xl">Select A Game Mode</h1>
+    <main class="flex flex-col w-full items-center pt-6">
+            <h1 class="text-6xl font-bold">Select A Game Mode</h1>
+
+            <div class="w-1/2 max-w-xl flex flex-col items-center space-y-2 mt-4">
+                <router-link class="button" to="/play">General</router-link>
+                <router-link class="button cursor-not-allowed" to="">Mathematics (LOCKED)</router-link>
+                <router-link class="button cursor-not-allowed" to="">Science (LOCKED)</router-link>
+                <router-link class="button cursor-not-allowed" to="">Custom (LOCKED)</router-link>
             </div>
-            <button>
-                <my-button to="/play">General</my-button>
-                <my-button to="">Mathematics (LOCKED)</my-button>
-                <my-button to="">Science (LOCKED)</my-button>
-                <my-button to="">Custom (LOCKED)</my-button>
 
-            </button>
-
-            <go-back/>
-            
-                    
-        </div>
+            <go-back class="mt-2" />
     </main>
     
 </template>
@@ -25,13 +19,11 @@
 
 <script>
     import Navbar from '@/components/Navbar.vue'
-    import MyButton from '../components/MyButton.vue'
     import GoBack from '../components/GoBack.vue'
 
     export default{
         components:{
             Navbar,
-            MyButton,
             GoBack,        
         }
     }
@@ -39,14 +31,7 @@
 
 
 <style scoped>
-    h1{
-        text-align: center;
-        font-size: 55px;
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
-
-    main{
-        padding: 50px;        
-    }
-
+.button {
+    @apply p-2 w-full border-2 border-blue-500 bg-blue-500 text-white hover:bg-white hover:text-blue-500 rounded-lg duration-200
+}
 </style>
