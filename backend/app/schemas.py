@@ -1,1 +1,5 @@
-# this is where the Pydantic schemas should go
+from pydantic import BaseModel
+
+class User(BaseModel):
+    username: str
+    password: str

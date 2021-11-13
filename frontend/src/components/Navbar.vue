@@ -9,11 +9,15 @@
 
                 <div class="flex items-center space-x-2 text-xs">
                     <div class="ml-3 relative">
-                        <div>
+                        <div v-if="loggedIn">
                             <div @click="toggleDropdown()" ref="dropdownMenu" class="cursor-pointer">
                                 <span class="sr-only">Open user menu</span>
                                 <p class='h-10 w-10 rounded-full flex items-center justify-center text-white font-bold bg-purple-400'>HL</p>
                             </div>
+                        </div>
+
+                        <div v-else>
+                            <router-link to="/login" class="bg-blue-500 text-white p-2 rounded cursor-pointer">Login</router-link>
                         </div>
 
                         <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
@@ -39,16 +43,24 @@ export default {
 
     methods: {
         documentClick(event) {
-            let elem = this.$refs.dropdownMenu;
-            let target = event.target;
+            if (this.loggedIn) {
+                let elem = this.$refs.dropdownMenu;
+                let target = event.target;
 
-            if ((elem !== target) && !elem.contains(target)) {
-                this.dropdownOpen = false;
+                if ((elem !== target) && !elem.contains(target)) {
+                    this.dropdownOpen = false;
+                }
             }
         },
 
         toggleDropdown() {
             this.dropdownOpen = !this.dropdownOpen;
+        }
+    },
+
+    computed: {
+        loggedIn() {
+            return this.$store.state.auth.status.loggedIn;
         }
     },
 
@@ -58,6 +70,6 @@ export default {
 
     unmounted() {
         document.removeEventListener("click", this.documentClick);
-    }
+    },
 }
 </script>
