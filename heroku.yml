@@ -4,4 +4,4 @@ build:
         web: frontend/Dockerfile
 run:
     worker: uvicorn main:app --reload
-    web: serve -s dist --l $PORT
+    web: serve -s dist -l $PORT
