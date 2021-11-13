@@ -4,4 +4,4 @@ build:
         frontend: frontend/Dockerfile
 run:
     backend: uvicorn main:app --reload -w 4
-    frontend: serve -s dist --l 8000
+    frontend: serve -s dist --l 80
