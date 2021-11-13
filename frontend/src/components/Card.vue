@@ -1,12 +1,14 @@
 <template>
     <div 
         :id="id"
-        class="card"
         :draggable="draggable"
+        class="font-bold w-full flex items-center justify-center bg-blue-500 text-white border cursor-pointer"
         @dragstart="dragStart"
         @dragover.stop
     >
-        <slot />
+        <p class="w-full text-center">
+            <slot></slot>
+        </p>
     </div>
 </template>
 
