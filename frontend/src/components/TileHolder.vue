@@ -25,7 +25,11 @@ export default {
         const items = ref([
             { id: 0, title: 'A', list: 1},
             { id: 1, title: 'B', list: 1},
-            { id: 2, title: 'C', list: 1},
+            { id: 1, title: 'C', list: 1},
+            { id: 1, title: 'D', list: 1},
+            { id: 1, title: 'E', list: 1},
+            { id: 1, title: 'F', list: 1},
+            { id: 2, title: 'G', list: 1},
         ])
 
         const getList = (list) => {
@@ -54,4 +58,5 @@ export default {
     },
 }
 </script>
+
 
