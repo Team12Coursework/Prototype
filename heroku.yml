@@ -1,0 +1,9 @@
+build:
+    docker:
+        backend: backend/Dockerfile
+        frontend: frontend/Dockerfile
+    config:
+        DEBUG: 0
+    run:
+        backend: uvicorn main:app --reload -w 4
+        frontend: serve -s dist --l 8000
