@@ -7,6 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.models.users import User
+from app import schemas
 from app.core.config import config
 from app.api.dependencies import get_database
 
@@ -32,7 +33,7 @@ def authenticate_user(database, username: str, password: str) -> Optional[User]:
 
     if not user:
         return None
-    if not verify_password(password, user.password_hash):
+    if not verify_password(password, user.password):
         return None
     return user
 
@@ -74,8 +75,9 @@ def logout(token=Depends(oauth2_scheme)):
     denylist.add(token)
 
 @router.put('/register', status_code=201)
-def register(username: str, password: str, database = Depends(get_database)):
+def register(user: schemas.User, database = Depends(get_database)):
     """function to create a user"""
-    pwd: str = get_password_hash(password)
-    user: User = User(username=username, password=pwd)
-    database.add(user)
+    pwd: str = get_password_hash(user.password)
+    user_model: User = User(username=user.username, password=pwd)
+    database.add(user_model)
+    database.commit()
