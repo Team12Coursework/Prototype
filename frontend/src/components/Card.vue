@@ -1,4 +1,7 @@
 <template>
+    <!--
+    Card component used to style the Scrabble pieces.
+    -->
     <div :id="id" :draggable="draggable"
         class="font-bold w-full h-full flex items-center justify-center bg-blue-500 text-gray-50 cursor-pointer rounded"
         @dragstart="dragStart" @dragover.stop

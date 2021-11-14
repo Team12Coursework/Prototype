@@ -1,4 +1,6 @@
 <template>
+    <!-- Chatbox component used for the Chat functionality in the game screen -->
+
     <form @submit="onSubmit" class="add-form">
         <div class="border p-2 rounded flex flex-col justify-between h-96 w-90/100">
             <div class="flex flex-col">
@@ -23,6 +25,9 @@ export default {
 
     methods: {
         getMessages(message) {
+            // dummy function provides functionality until the API is finished
+            // this will be removed, and an API call will be added to ensure chat messages
+            // are broadcast to the other users.
             this.messages = [... this.messages, message]
         },
 
