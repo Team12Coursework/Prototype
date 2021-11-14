@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainMenu from '../views/MainMenu.vue'
+import store from '../store/index.js'
 
 const routes = [
     {
@@ -48,6 +49,16 @@ const router = createRouter({
     // router history mode allows using the back button on the browser to visit the previous page
     history: createWebHistory(process.env.BASE_URL),
     routes
+})
+
+router.beforeEach((to, from, next) => {
+    const loggedIn = store.state.auth.status.loggedIn;
+    console.log(loggedIn);
+    if ((to.name == 'Login' || to.name == 'Register') && !loggedIn) {
+        next()
+    } else {
+        next({name: 'Login'})
+    }
 })
 
 export default router
