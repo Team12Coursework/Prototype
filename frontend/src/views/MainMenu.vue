@@ -7,9 +7,9 @@
                 <h1 class="text-6xl font-bold">Connect</h1>
             </div>
 
-            <div class="w-1/4 flex flex-col justify-center space-y-2" style="min-width: 512px;">
+            <div class="w-1/4 flex flex-col justify-center space-y-4" style="min-width: 512px;">
                 <router-link class="button" to='/gamemodes'>Game Modes</router-link>
-                <router-link class="button" to='/leaderboard'>Leaderboard</router-link>
+                <leaderboard />
             </div>
         </div>
     </main>
@@ -20,10 +20,12 @@
 
 <script>
     import Navbar from "@/components/Navbar.vue"
+    import Leaderboard from "@/components/Leaderboard.vue"
 
     export default{
         components: {
             Navbar,
+            Leaderboard,
         }
     }
 

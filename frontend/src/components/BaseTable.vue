@@ -1,4 +1,9 @@
 <template>
+    <!-- 
+    BaseTable component used for basic table styling 
+    Components such as Leaderboard and MatchHistory will inherit from this component
+    to ensure consistent styling
+    -->
     <div class="border rounded shadow-md mt-4">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">

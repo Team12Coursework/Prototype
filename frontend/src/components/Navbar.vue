@@ -16,7 +16,8 @@
                             </div>
                         </div>
 
-                        <div v-else>
+                        <div v-else class="flex space-x-2 font-bold">
+                            <router-link to="/register" class="bg-green-500 text-white p-2 rounded cursor-pointer">Register</router-link>
                             <router-link to="/login" class="bg-blue-500 text-white p-2 rounded cursor-pointer">Login</router-link>
                         </div>
 
