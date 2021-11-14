@@ -13,11 +13,6 @@ const routes = [
         component: () => import("@/views/Game.vue"),
     },
     {
-        path: "/leaderboard",
-        name: "Leaderboard",
-        component: () => import("@/components/Leaderboard.vue"),
-    },
-    {
         path: "/settings",
         name: "Settings",
         component: () => import("@/views/Settings.vue"),
