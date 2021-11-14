@@ -4,6 +4,12 @@ from starlette.middleware.cors import CORSMiddleware
 from app import init_db
 from app.api import router
 
+"""
+main program entrypoint.
+This script may be invoked with uvicorn
+using "python3 -m uvicorn main:app --reload"
+"""
+
 app = FastAPI(
     title='CharacterConnect',
     docs_url='/',

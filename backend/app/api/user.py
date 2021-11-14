@@ -11,6 +11,12 @@ from app import schemas
 from app.core.config import config
 from app.api.dependencies import get_database
 
+"""
+file holds all of the important methods/ endpoints for validating a user
+this includes creating a user in the database when they register
+and looking for users on login
+"""
+
 router = APIRouter()
 
 pwd_context = CryptContext(schemes=['sha256_crypt'])
