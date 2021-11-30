@@ -1,6 +1,10 @@
-from fastapi import APIRouter
+import dataclasses
 import json
 import random
+from typing import Dict, List
+
+from app import schemas
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 
@@ -8,12 +12,10 @@ router = APIRouter()
 file holds all of the routes for the game behaviour
 """
 
-
-points = {
+points: Dict[str, int] = {
     "A": 1, "B": 4, "C": 1, "D": 2, "E": 1, "F": 3, "G": 2, "H": 3, "I": 1, "J": 8, "K": 5, "L": 1, "M": 3, "N": 1,
     "O": 1, "P": 4, "Q": 10, "R": 1, "S": 1, "T": 1, "U": 2, "V": 5, "W": 5, "X": 10, "Y": 4, "Z": 8
 }
-
 
 # 12 E's, 10 A's, 8 R's , 8 I's, 7 N's, 6 L's, 6 O's, 5 T's, 5 S's, 3 C's, 3 U's, 3 G's, 3 D's, 3 H's, 2 F's, 2 M's, 2 Y's, 2 P's,
 # 2 B's, 2 V's, 1 k, 1 W, 1 Z, 1 J, 1 X, 1 Q
@@ -22,10 +24,8 @@ tiles = ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "E", "E", "E", "E", "
          "O", "O", "O", "T", "T", "T", "T", "T", "S", "S", "S", "S", "S", "C", "C", "C", "U", "U", "U", "G", "G", "G", "D", "D", "D", "H", "H",
          "H", "F", "F", "M", "M", "Y", "Y", "P", "P", "B", "B", "V", "V", "K", "W", "Z", "J", "X", "Q"]
 
-
 # For keeping track of the number of turns
-num_turn = 2
-
+num_turn: int = 2
 
 # If the search word returns a valid word, find its points and add it to the total
 # Otherwise return an exception
@@ -158,3 +158,82 @@ def get_Tile():
     tiles.pop(index)  # Removes the tile from the list
 
     return tile
+
+
+def filter_message(data: Dict[str, str]) -> Dict[str, str]:
+    """function to filter chat messages"""
+
+    return json.dumps(data)
+
+@dataclasses.dataclass
+class Player:
+    """dataclass to hold some attributes about each player in the lobby"""
+    name: str
+    socket: WebSocket
+
+
+class ConnectionManager:
+    """ConnectionManager class used to handle active WebSocket connections"""
+    def __init__(self) -> None:
+        self.staging: Dict[str, List[WebSocket]] = {}
+        self.connected: Dict[str, List[Player]] = {}
+
+    async def connect(self, websocket: WebSocket) -> None:
+        """method to accept an incoming WebSocket connection"""
+        await websocket.accept()
+
+    async def join(self, room: str, player: schemas.Player, websocket: WebSocket) -> None:
+        """method to move the player from staging to an active room on successful connect"""
+        if not self.connected.get(room):
+            self.connected[room] = []
+        player.socket = websocket
+        self.connected[room].append(player)
+
+    async def _emit_player_disconnect(self, room: str, player: schemas.Player) -> None:
+        msg: str = json.dumps({
+            'type': 'playerDisconnect',
+            'player': player.dict(exclude={'socket'}),
+        })
+        await self.broadcast(room, msg)
+
+    async def disconnect(self, room: str, socket: WebSocket) -> None:
+        """method to remove player from connections"""
+        for i, player in enumerate(self.connected[room]):
+            if player.socket == socket:
+                player = self.connected[room].pop(i)
+                await self._emit_player_disconnect(room, player)
+                break
+
+    async def send_personal_message(self, message: str, websocket: WebSocket) -> None:
+        """method to send a message to a specific connection"""
+        await websocket.send_text(message)
+
+    async def broadcast(self, room: str, message: str) -> None:
+        """method to send a message to an entire room"""
+        for player in self.connected[room]:
+            await player.socket.send_text(message)
+
+
+manager = ConnectionManager()
+
+
+@router.websocket("/ws/{room}")
+async def websocket_endpoint(websocket: WebSocket, room: str):
+    """method to handle WebSocket events from frontend"""
+    await manager.connect(websocket)
+    try:
+        while True:
+            data: str = await websocket.receive_text()
+            decoded = json.loads(data)
+            if decoded['type'] == 'playerJoin':
+                player = schemas.Player.parse_obj(decoded['player'])
+                await manager.join(room, player, websocket)
+                await manager.broadcast(room, data)
+            elif decoded['type'] == 'message':
+                msg = filter_message(decoded)
+                await manager.broadcast(room, msg)
+            else:
+                await manager.broadcast(room, data)
+    except WebSocketDisconnect:
+        await manager.disconnect(room, websocket)
+        await manager.broadcast(room, 'player left')
