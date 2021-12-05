@@ -13,7 +13,6 @@
             </div>
         </div>
     </main>
-
 </template>
 
 
@@ -26,9 +25,8 @@
         components: {
             Navbar,
             Leaderboard,
-        }
+        },
     }
-
 </script>
 
 <style scoped>
