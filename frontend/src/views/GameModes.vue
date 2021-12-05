@@ -5,7 +5,7 @@
             <h1 class="text-6xl font-bold">Select A Game Mode</h1>
 
             <div class="w-1/2 max-w-xl flex flex-col items-center space-y-2 mt-4">
-                <router-link class="button" to="/play">General</router-link>
+                <router-link class="button" to="/lobby">General</router-link>
                 <router-link class="button cursor-not-allowed" to="">Mathematics (LOCKED)</router-link>
                 <router-link class="button cursor-not-allowed" to="">Science (LOCKED)</router-link>
                 <router-link class="button cursor-not-allowed" to="">Custom (LOCKED)</router-link>
@@ -24,7 +24,7 @@
     export default{
         components:{
             Navbar,
-            GoBack,        
+            GoBack,
         }
     }
 </script>
