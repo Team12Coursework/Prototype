@@ -27,9 +27,11 @@ tiles = ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "E", "E", "E", "E", "
 # For keeping track of the number of turns
 num_turn: int = 2
 
-# If the search word returns a valid word, find its points and add it to the total
-# arr1 is the older gameBoard, and arr2 is the new gameBoard
 def validate_word(arr1, arr2):
+    """
+    if the search word returns a valid word, find its points and add it to the total.
+    arr1 is the older game board, and arr2 is the new game board.
+    """
     word = find_word(arr1, arr2)
 
     if valid_start(arr2) and len(word) > 0:
