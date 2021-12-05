@@ -9,7 +9,7 @@ const routes = [
         component: MainMenu
     },
     {
-        path: "/play",
+        path: "/play/:game_id",
         name: "Play",
         component: () => import("@/views/Game.vue"),
     },
@@ -27,6 +27,11 @@ const routes = [
         path: "/register",
         name: "Register",
         component: () => import("@/views/Register.vue"),
+    },
+    {
+        path: "/lobby",
+        name: "Lobby",
+        component: () => import("@/views/Lobby.vue"),
     },
     {
         path: "/gamemodes",
