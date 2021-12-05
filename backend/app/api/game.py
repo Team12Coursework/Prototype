@@ -121,11 +121,12 @@ def find_word(arr1, arr2):
     return ""
 
 
-
-# Checks if the start of the game is valid
-# The first letter must be placed in the middle of the board ([7][7])
-# The rest of the letters must be placed across or down from the center
 def valid_start(arr):
+    """
+    checks if the start of the game is valid
+    the first letter must be placed in the middle of the board (7, 7)
+    the rest of the letters must be placed across or down from the center.
+    """
     valid = False
 
     if num_turn == 0 and arr[7][7]:
