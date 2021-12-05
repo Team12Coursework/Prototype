@@ -5,6 +5,7 @@ import { board } from '@/store/board.module.js';
 export default createStore({
     modules: {
         auth,
-        board
+        board,
     },
+    plugins: [],
 })
