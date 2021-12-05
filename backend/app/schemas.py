@@ -21,3 +21,9 @@ class Player(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+    def __repr__(self) -> str:
+        return f'Player(name={self.name})'
+
+    def __str__(self) -> str:
+        return self.__repr__()
