@@ -28,12 +28,12 @@ tiles = ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "E", "E", "E", "E", "
 num_turn: int = 2
 
 # If the search word returns a valid word, find its points and add it to the total
-# Otherwise return an exception
-def validate_Word():
-    word = find_Word(array1, array2)
+# arr1 is the older gameBoard, and arr2 is the new gameBoard
+def validate_word(arr1, arr2):
+    word = find_word(arr1, arr2)
 
-    if valid_start(array2) and len(word) > 0:
-        word_points = calculate_Points(word)
+    if valid_start(arr2) and len(word) > 0:
+        word_points = calculate_points(word)
         print(word)
         print(word_points)
         # Update the players score in the database
@@ -44,7 +44,7 @@ def validate_Word():
 
 
 # Will search the array for the word and the Database to see if it exists
-def find_Word(arr1, arr2):
+def find_word(arr1, arr2):
     word = ""
 
     x = 0
@@ -56,17 +56,16 @@ def find_Word(arr1, arr2):
 
     for i in range(x, 15):
         for j in range(0, 16):
-            if j:  # If J is not none
+            if j is not None:
                 if arr1[x][y] != arr2[x][y]:  # If the original old array does not contain the letter
                     y2 = y
 
-                    if y2 < 14 and arr2[x][y2+1]:
-                        while arr2[x][y2-1]:  # It will find where the word starts
-                            y2 = y2-1
+                    if y2 < 14 and arr2[x][y2 + 1]:
+                        while arr2[x][y2 - 1]:  # It will find where the word starts
+                            y2 = y2 - 1
                         while arr2[x][y2]:  # It will start adding the letters to the word, from where it starts
                             if x < 15 and y2 < 15:
                                 word += arr2[x][y2]
-
 
                             # For checking if the word is connected to another word
                             if num_turn > 0:
@@ -77,11 +76,10 @@ def find_Word(arr1, arr2):
                             if y2 == 15:
                                 break
 
-
                     x2 = x
-                    if x2 < 14 and arr2[x2+1][y]:
-                        while arr2[x2-1][y]:
-                            x2 = x2-1
+                    if x2 < 14 and arr2[x2 + 1][y]:
+                        while arr2[x2 - 1][y]:
+                            x2 = x2 - 1
                         while arr2[x2][y]:
                             if x2 < 15 and y < 15:
                                 word += arr2[x2][y]
@@ -93,7 +91,6 @@ def find_Word(arr1, arr2):
                             x2 = x2 + 1
                             if x2 == 15:
                                 break
-
 
             if len(word) == 0:
                 y += 1
@@ -108,20 +105,18 @@ def find_Word(arr1, arr2):
         else:
             break
 
-
     if len(word) == 0:
         return ""
     elif num_turn > 0 and check1 == 0 and check2 == 0:
         return ""
     else:
         # For now it searches the JSON file
-        f = open('words_dictionary.json')
+        with open('words_dictionary.json') as file:
+            data = json.load(file)
 
-        data = json.load(f)
-
-        for i in data:
-            if str(i).upper() == word:
-                return word
+            for i in data:
+                if str(i).upper() == word:
+                    return word
 
     return ""
 
@@ -142,7 +137,7 @@ def valid_start(arr):
     return valid
 
 
-def calculate_Points(word):
+def calculate_points(word):
     total_points = 0
 
     for letter in word:
@@ -152,7 +147,7 @@ def calculate_Points(word):
 
 
 # Gets a random tile from the tiles list
-def get_Tile():
+def get_tile():
     index = random.randint(0, len(tiles))
     tile = tiles[index]
     tiles.pop(index)  # Removes the tile from the list
