@@ -2,7 +2,7 @@ import AuthService from '@/services/auth.service';
 const user = JSON.parse(localStorage.getItem('user'));
 
 const initialState = user
-  ? { status: { loggedIn: true }, user }
+  ? { status: { loggedIn: true }, user: user }
   : { status: { loggedIn: false }, user: null };
 
 export const auth = {
@@ -44,6 +44,7 @@ export const auth = {
 
     mutations: {
         loginSuccess(state, user) {
+            console.log('user:', user);
             state.status.loggedIn = true;
             state.user = user;
         },
