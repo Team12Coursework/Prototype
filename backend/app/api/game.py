@@ -157,25 +157,23 @@ def get_tile():
 
     return tile
 
-"""function to filter chat messages"""
-def filter_message(data: Dict[str, str]) -> Dict[str, str]:
 
-    bannedWords = ["shit","fuck","crap","bitch"]
-    censoredSentence = []
-    " ".join(censoredSentence)
+def filter_message(data: Dict[str, str]) -> Dict[str, str]:
+    """function to filter chat messages"""
     
-    data = {
-        type : message,
-        Message : censoredSentence,
-        fromUser : username,
-        }
+    bannedWords = ["shit","fuck","crap","bitch"] # will add more words to this
     
-    for word in Message.split():
+    chatMessage = data.get('message')
+    censoredMessageList = []
+    
+    for word in chatMessage.split():
         if word in bannedWords:
-            censoredSentence.append("[redacted]")
-    else:
-        censoredSentence.append(word)
+            censoredMessageList.append("[redacted]")
+        else:
+         censoredMessageList.append(word)
     
+    censoredMessage = " ".join(censoredMessageList)
+    data.update({'message': censoredMessage})
     return json.dumps(data)
 
 
