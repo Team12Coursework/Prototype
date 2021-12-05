@@ -160,11 +160,18 @@ def filter_message(data: Dict[str, str]) -> Dict[str, str]:
 
     return json.dumps(data)
 
+
 @dataclasses.dataclass
 class Player:
     """dataclass to hold some attributes about each player in the lobby"""
     name: str
     socket: WebSocket
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        return f'Player(name={self.name})'
 
 
 class ConnectionManager:
@@ -196,8 +203,8 @@ class ConnectionManager:
         for i, player in enumerate(self.connected[room]):
             if player.socket == socket:
                 player = self.connected[room].pop(i)
-                await self._emit_player_disconnect(room, player)
                 break
+        await self._emit_player_disconnect(room, player)
 
     async def send_personal_message(self, message: str, websocket: WebSocket) -> None:
         """method to send a message to a specific connection"""
@@ -222,13 +229,16 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
             decoded = json.loads(data)
             if decoded['type'] == 'playerJoin':
                 player = schemas.Player.parse_obj(decoded['player'])
+                print(f'player {player} joined')
                 await manager.join(room, player, websocket)
                 await manager.broadcast(room, data)
             elif decoded['type'] == 'message':
                 msg = filter_message(decoded)
+                print(f'received message: {msg}')
                 await manager.broadcast(room, msg)
             else:
                 await manager.broadcast(room, data)
     except WebSocketDisconnect:
         await manager.disconnect(room, websocket)
-        await manager.broadcast(room, 'player left')
+        await manager.broadcast(room, json.dumps({'type': 'playerLeft'}))
+        print(f'player {player} left')
