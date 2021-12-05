@@ -87,7 +87,7 @@ export default{
         },
 
         sendChatMessage(message) {
-            this.socket.send(JSON.stringify({type: "message", "message": message}));
+            this.socket.send(JSON.stringify({type: "message", message: message, fromUser: this.user, sentAt: new Date().toLocaleTimeString('en-GB') }));
         },
 
         receiveChatMessage(message) {
@@ -95,19 +95,16 @@ export default{
         },
 
         processMessage(data) {
-            console.log('called:', data);
-            console.log('called:', data.type === "message");
             if (data.type === "playerJoin" && data.player.name !== this.player.name) {
-                this.chatMessages.push("player joined");
+                this.receiveChatMessage(data);
             }
 
             if (data.type === "message") {
-                this.receiveChatMessage(data.message);
-                console.log(data.message);
+                this.receiveChatMessage(data);
             }
 
             if (data.type === "playerLeft") {
-                this.chatMessages.push("player left the room");
+                this.receiveChatMessage(data);
             }
         },
     },
@@ -120,6 +117,19 @@ export default{
         piecePlaced() {
             return this.$store.state.board.placed;
         },
+
+        user() {
+            // function to decode the JWT token given to the client at login.
+            // this function will decode the JWT and extract the username which will be used to play the game.
+
+            var base64Url = this.$store.state.auth.user.accessToken.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+
+            return JSON.parse(jsonPayload).sub;
+        },
     },
 
     created() {
@@ -128,11 +138,14 @@ export default{
 
     mounted() {
         this.socket = new WebSocket(`ws://localhost:8000/api/game/ws/${this.$route.game_id}`);
+        console.log('user:', this.user);
         this.socket.addEventListener("open", () => {
             this.socket.send(JSON.stringify({
-                type: "playerJoin", player: {
-                    name: new Date().toString()
-                }
+                type: "playerJoin",
+                player: {
+                    name: this.user,
+                },
+                sentAt: new Date().toLocaleTimeString('en-GB'),
             }))
             console.log("joined room");
         })
