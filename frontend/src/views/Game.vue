@@ -2,7 +2,8 @@
         <navbar />
 
         <main class="w-full flex flex-col min-h-screen h-screen p-6 space-y-4">
-            <scoreboard />
+            <scoreboard :points="scoreboardPoints" />
+
             <div class="w-full flex h-full space-x-4">
                 <div class="w-full flex flex-col space-y-4">
                     <div class="w-full h-full space-x-2 flex">
@@ -48,6 +49,11 @@ export default{
             chatMessages: [],
             player: {
                 name: "HarryLees",
+            },
+            numPoints: 0,
+            playerTwo: {
+                name: "pending...",
+                points: 0,
             },
             socket: null,
         }
@@ -95,7 +101,7 @@ export default{
         },
 
         processMessage(data) {
-            if (data.type === "playerJoin" && data.player.name !== this.player.name) {
+            if (data.type === "playerJoin" && data.player.name !== this.user) {
                 this.receiveChatMessage(data);
             }
 
@@ -112,6 +118,19 @@ export default{
     computed: {
         boardArray() {
             return this.$store.state.board;
+        },
+
+        scoreboardPoints() {
+            return [
+                {
+                    name: this.user,
+                    points: this.numPoints,
+                },
+                {
+                    name: this.playerTwo.name,
+                    points: this.playerTwo.points,
+                },
+            ]
         },
 
         piecePlaced() {
