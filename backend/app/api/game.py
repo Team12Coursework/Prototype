@@ -1,161 +1,20 @@
-import dataclasses
+import datetime
 import json
-import random
-from typing import Dict, List
+from typing import Dict
 
 from app import schemas
+from app.api.connection_manager import ConnectionManager
+from app.api.game_manager import GameManager
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from websockets.exceptions import ConnectionClosedOK
+
 
 router = APIRouter()
-
-"""
-file holds all of the routes for the game behaviour
-"""
-
-points: Dict[str, int] = {
-    "A": 1, "B": 4, "C": 1, "D": 2, "E": 1, "F": 3, "G": 2, "H": 3, "I": 1, "J": 8, "K": 5, "L": 1, "M": 3, "N": 1,
-    "O": 1, "P": 4, "Q": 10, "R": 1, "S": 1, "T": 1, "U": 2, "V": 5, "W": 5, "X": 10, "Y": 4, "Z": 8
-}
-
-# 12 E's, 10 A's, 8 R's , 8 I's, 7 N's, 6 L's, 6 O's, 5 T's, 5 S's, 3 C's, 3 U's, 3 G's, 3 D's, 3 H's, 2 F's, 2 M's, 2 Y's, 2 P's,
-# 2 B's, 2 V's, 1 k, 1 W, 1 Z, 1 J, 1 X, 1 Q
-tiles = ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "R", "R", "R", "R", "R",
-         "R", "R", "R", "I", "I", "I", "I", "I", "I", "I", "I", "N", "N", "N", "N", "N", "N", "N", "L", "L", "L", "L", "L", "L", "O", "O", "O",
-         "O", "O", "O", "T", "T", "T", "T", "T", "S", "S", "S", "S", "S", "C", "C", "C", "U", "U", "U", "G", "G", "G", "D", "D", "D", "H", "H",
-         "H", "F", "F", "M", "M", "Y", "Y", "P", "P", "B", "B", "V", "V", "K", "W", "Z", "J", "X", "Q"]
-
-# For keeping track of the number of turns
-num_turn: int = 2
-
-def validate_word(arr1, arr2):
-    """
-    if the search word returns a valid word, find its points and add it to the total.
-    arr1 is the older game board, and arr2 is the new game board.
-    """
-    word = find_word(arr1, arr2)
-
-    if valid_start(arr2) and len(word) > 0:
-        word_points = calculate_points(word)
-        print(word)
-        print(word_points)
-        # Update the players score in the database
-        return True
-    else:
-        print("No word")
-        return False
+connection_manager = ConnectionManager()
+game_manager = GameManager()
 
 
-# Will search the array for the word and the Database to see if it exists
-def find_word(arr1, arr2):
-    word = ""
-
-    x = 0
-    y = 0
-
-    # For checking if the word is connected to another word
-    check1 = 0
-    check2 = 0
-
-    for i in range(x, 15):
-        for j in range(0, 16):
-            if j is not None:
-                if arr1[x][y] != arr2[x][y]:  # If the original old array does not contain the letter
-                    y2 = y
-
-                    if y2 < 14 and arr2[x][y2 + 1]:
-                        while arr2[x][y2 - 1]:  # It will find where the word starts
-                            y2 = y2 - 1
-                        while arr2[x][y2]:  # It will start adding the letters to the word, from where it starts
-                            if x < 15 and y2 < 15:
-                                word += arr2[x][y2]
-
-                            # For checking if the word is connected to another word
-                            if num_turn > 0:
-                                if 0 <= x < 14 and arr2[x + 1][y2] or arr2[x - 1][y2]:
-                                    check1 = check1 + 1
-
-                            y2 = y2 + 1
-                            if y2 == 15:
-                                break
-
-                    x2 = x
-                    if x2 < 14 and arr2[x2 + 1][y]:
-                        while arr2[x2 - 1][y]:
-                            x2 = x2 - 1
-                        while arr2[x2][y]:
-                            if x2 < 15 and y < 15:
-                                word += arr2[x2][y]
-
-                            # For checking if the word is connected to another word
-                            if num_turn > 0:
-                                if 0 <= y < 14 and arr2[x2][y + 1] or arr2[x2][y - 1]:
-                                    check2 = check2 + 1
-                            x2 = x2 + 1
-                            if x2 == 15:
-                                break
-
-            if len(word) == 0:
-                y += 1
-                if y == 15:
-                    y = 0
-            else:
-                break
-
-        if len(word) == 0:
-            x += 1
-            y = 0
-        else:
-            break
-
-    if len(word) == 0:
-        return ""
-    elif num_turn > 0 and check1 == 0 and check2 == 0:
-        return ""
-    else:
-        # For now it searches the JSON file
-        with open('words_dictionary.json') as file:
-            data = json.load(file)
-
-            for i in data:
-                if str(i).upper() == word:
-                    return word
-
-    return ""
-
-
-def valid_start(arr):
-    """
-    checks if the start of the game is valid
-    the first letter must be placed in the middle of the board (7, 7)
-    the rest of the letters must be placed across or down from the center.
-    """
-    valid = False
-
-    if num_turn == 0 and arr[7][7]:
-        if arr[6][7] is None and arr[7][6] is None:
-            valid = True
-    elif num_turn > 0:
-        valid = True
-
-    return valid
-
-
-def calculate_points(word):
-    total_points = 0
-
-    for letter in word:
-        total_points += points[letter]
-
-    return total_points
-
-
-# Gets a random tile from the tiles list
-def get_tile():
-    index = random.randint(0, len(tiles))
-    tile = tiles[index]
-    tiles.pop(index)  # Removes the tile from the list
-
-    return tile
+"""file holds all of the routes for the game behaviour."""
 
 
 def filter_message(data: Dict[str, str]) -> Dict[str, str]:
@@ -164,84 +23,86 @@ def filter_message(data: Dict[str, str]) -> Dict[str, str]:
     return json.dumps(data)
 
 
-@dataclasses.dataclass
-class Player:
-    """dataclass to hold some attributes about each player in the lobby"""
-    name: str
-    socket: WebSocket
+async def process_next_turn() -> None:
+    # there are two possible types for the next turn event.
+    # wordPlaced, and turnSkipped. A turnSkipped event can be raised for a multitude of reasons,
+    # the outcome is the same, the turn will be skipped, no points will be awarded.
 
-    def __str__(self) -> str:
-        return self.__repr__()
+    # incoming data should be in the format:
+    # {
+    #    'type': 'wordPlaced',
+    #    'newBoard': List[List[str]], # 15 x 15 board
+    # }
 
-    def __repr__(self) -> str:
-        return f'Player(name={self.name})'
+    data = json.dumps({
 
-
-class ConnectionManager:
-    """ConnectionManager class used to handle active WebSocket connections"""
-    def __init__(self) -> None:
-        self.staging: Dict[str, List[WebSocket]] = {}
-        self.connected: Dict[str, List[Player]] = {}
-
-    async def connect(self, websocket: WebSocket) -> None:
-        """method to accept an incoming WebSocket connection"""
-        await websocket.accept()
-
-    async def join(self, room: str, player: schemas.Player, websocket: WebSocket) -> None:
-        """method to move the player from staging to an active room on successful connect"""
-        if not self.connected.get(room):
-            self.connected[room] = []
-        player.socket = websocket
-        self.connected[room].append(player)
-
-    async def _emit_player_disconnect(self, room: str, player: schemas.Player) -> None:
-        msg: str = json.dumps({
-            'type': 'playerDisconnect',
-            'player': player.dict(exclude={'socket'}),
-        })
-        await self.broadcast(room, msg)
-
-    async def disconnect(self, room: str, socket: WebSocket) -> None:
-        """method to remove player from connections"""
-        for i, player in enumerate(self.connected[room]):
-            if player.socket == socket:
-                player = self.connected[room].pop(i)
-                break
-        await self._emit_player_disconnect(room, player)
-
-    async def send_personal_message(self, message: str, websocket: WebSocket) -> None:
-        """method to send a message to a specific connection"""
-        await websocket.send_text(message)
-
-    async def broadcast(self, room: str, message: str) -> None:
-        """method to send a message to an entire room"""
-        for player in self.connected[room]:
-            await player.socket.send_text(message)
+    })
 
 
-manager = ConnectionManager()
+async def process_game_start(room) -> None:
+    """function to process the game start"""
+
+    data = json.dumps({
+        'type': 'gameStart',
+        'tiles': [
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+        ],
+        'sentAt': datetime.datetime.now().time(),
+        # the first player to join the lobby is always the first to start the game, can change later if necessary.
+        'playersTurn': connection_manager.connected[room][0].name,
+    })
+    await connection_manager.broadcast(room, data)
+
+
+async def process_room_join(websocket, decoded, room) -> None:
+    """function to process a player joining the room"""
+
+    # incoming data should be in the format:
+    # {
+    #   'type': 'playerJoin',
+    #   'player': {
+    #       'name': str,
+    #   },
+    #   'sentAt': datetime.date,
+    # }
+
+    player = schemas.Player.parse_obj(decoded['player'])
+    print(f'player {player} joined room {room}')
+
+    # outgoing data should be in the format:
+    # the first player to enter the lobby will be the lobby owner
+    # and will have the first turn.
+    data = json.dumps({
+        'type':         'playerJoin',
+        'players':      [player.name for player in connection_manager.connected[room]],
+        'sentAt':       datetime.datetime.now().time(),
+    })
+
+    await connection_manager.join(room, player, websocket)
+    await connection_manager.broadcast(room, data)
+
+    if len(connection_manager.connected[room]) == 2:
+        await process_game_start(room)
 
 
 @router.websocket("/ws/{room}")
 async def websocket_endpoint(websocket: WebSocket, room: str):
     """method to handle WebSocket events from frontend"""
-    await manager.connect(websocket)
+    await connection_manager.connect(websocket)
     try:
         while True:
             data: str = await websocket.receive_text()
             decoded = json.loads(data)
             if decoded['type'] == 'playerJoin':
-                player = schemas.Player.parse_obj(decoded['player'])
-                print(f'player {player} joined')
-                await manager.join(room, player, websocket)
-                await manager.broadcast(room, data)
+                await process_room_join(websocket, decoded, room)
             elif decoded['type'] == 'message':
                 msg = filter_message(decoded)
                 print(f'received message: {msg}')
-                await manager.broadcast(room, msg)
+                await connection_manager.broadcast(room, msg)
             else:
-                await manager.broadcast(room, data)
-    except WebSocketDisconnect:
-        await manager.disconnect(room, websocket)
-        await manager.broadcast(room, json.dumps({'type': 'playerLeft'}))
-        print(f'player {player} left')
+                await connection_manager.broadcast(room, data)
+    except (WebSocketDisconnect, ConnectionClosedOK):
+        await connection_manager.disconnect(room, websocket)
+        await connection_manager.broadcast(room, json.dumps({'type': 'playerLeft'}))
+        print(f'player disconnected')
