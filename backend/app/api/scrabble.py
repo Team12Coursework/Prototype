@@ -74,7 +74,6 @@ def find_word(arr1, arr2, turn: int):
             y = 0
         else:
             break
-
     if len(word) == 0:
         return ""
     elif (turn > 0) and (check1 == 0) and (check2 == 0):
