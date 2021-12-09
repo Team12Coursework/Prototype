@@ -1,7 +1,7 @@
 <template>
-    <div :id="id" class="board rounded" @dragover.prevent @drop.prevent="drop">
-
+    <div class="board rounded" @dragover.prevent @drop.prevent="drop">
         <div v-if="letter" class="font-bold w-full h-full flex items-center justify-center bg-blue-500 text-gray-50 rounded">
+            {{ id }}
             <p class="w-full h-full flex items-center justify-center">
                 {{ letter }}
             </p>
@@ -13,15 +13,24 @@
 export default{
     props: {
         id: {
-            type: Number,
+            type: String,
             required: true,
-        }
+        },
     },
 
-    data() {
-        return {
-            letter: "",
-        }
+    computed: {
+        letter() {
+            console.log('letter', this.x, this.y);
+            return this.$store.state.board.board[this.y][this.x];
+        },
+
+        x() {
+            return parseInt(this.id.split(',')[0])
+        },
+
+        y() {
+            return parseInt(this.id.split(',')[1])
+        },
     },
 
     methods: {
@@ -30,17 +39,13 @@ export default{
             // as soon as a piece is dropped, it will trigger an event
             // which will display the next turn and reset buttons.
 
-            const card_id = e.dataTransfer.getData('card_id');
-            const card = document.getElementById(card_id);
-            const letter = card.childNodes[0].innerHTML;
+            const letter = e.dataTransfer.getData('letter');
 
-            let x = (this.id % 15) - 1;
-            let y = Math.floor(this.id / 15) - 1;
+            console.log('drop', this.x, this.y);
 
             let piece = {
-                x: x,
-                y: y,
-                id: card_id,
+                x: this.x,
+                y: this.y,
                 letter: letter,
             };
 
@@ -49,8 +54,6 @@ export default{
                     console.log("piece moved successfully");
                 }
             )
-
-            this.letter = card_id
         }
     }
 }
