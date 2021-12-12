@@ -1,13 +1,11 @@
 import datetime
 import json
-from typing import Dict
+from typing import Dict, List, Optional
 
-from app import schemas
 from app.api.connection_manager import ConnectionManager
-from app.api.game_manager import GameManager, Player
+from app.api.game_manager import GameManager, Player, InvalidWordException
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
-import numpy as np
 
 
 router = APIRouter()
@@ -21,14 +19,17 @@ def current_time() -> str:
 
 def filter_message(data: Dict[str, str]) -> Dict[str, str]:
     """function to filter chat messages"""
-
     return json.dumps(data)
 
-def process_next_turn(room_id: str, board: np.ndarray) -> Dict[str, str]:
+def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[str, str]:
     """process the next turn, this function doesn't return anything to the client"""
-    game: GameManager = connection_manager.connected[room_id].game
-    game.next_turn(board)
-    return game.asdict()
+    game: GameManager = connection_manager.connected[room_id]
+    try:
+        game.next_turn(board)
+        return game.asdict()
+    except InvalidWordException as error:
+        print(error)
+        return {'type': 'updateError', 'message': 'invalid word placed'}
 
 async def process_room_join(websocket, decoded, room_id: str) -> None:
     """function to process a player joining the room"""
@@ -58,6 +59,13 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
             elif decoded['type'] == 'message':
                 msg = filter_message(decoded)
                 await connection_manager.broadcast(room, msg)
+            elif decoded['type'] == 'gameUpdate':
+                state: Dict[str, str] = process_next_turn(room, decoded['board'])
+                print(decoded, state)
+                if state['type'] == 'gameUpdate':
+                    await connection_manager.broadcast(room, json.dumps(state))
+                elif state['type'] == 'updateError':
+                    await connection_manager.send_personal_message(json.dumps(state), websocket)
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
         await connection_manager.disconnect(room, websocket)
         await connection_manager.broadcast(room, json.dumps({'type': 'playerLeft'}))
