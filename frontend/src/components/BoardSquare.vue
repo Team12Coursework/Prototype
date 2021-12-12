@@ -1,11 +1,11 @@
 <template>
     <div class="board rounded" @dragover.prevent @drop.prevent="drop">
         <div v-if="letter" class="font-bold w-full h-full flex items-center justify-center bg-blue-500 text-gray-50 rounded">
-            {{ id }}
             <p class="w-full h-full flex items-center justify-center">
                 {{ letter }}
             </p>
         </div>
+        <p v-else class="w-full h-full flex items-center justify-center text-gray-500">{{ id }}</p>
     </div>
 </template>
 
@@ -20,7 +20,6 @@ export default{
 
     computed: {
         letter() {
-            console.log('letter', this.x, this.y);
             return this.$store.state.board.board[this.y][this.x];
         },
 
