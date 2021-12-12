@@ -58,7 +58,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const loggedIn = store.state.auth.status.loggedIn;
-    if (to.name !== 'Login' && !loggedIn) {
+    console.log((to.name !== 'Login' || to.name !== 'Register') && !loggedIn);
+    if (to.name === 'Login') {
+        next()
+    } else if (to.name === 'Register') {
+        next()
+    } else if (!loggedIn) {
         next({name: 'Login'})
     } else {
         next()

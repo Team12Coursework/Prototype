@@ -1,6 +1,5 @@
 import os
 import secrets
-from typing import Tuple
 
 class Config:
     SECRET_KEY: str = secrets.token_urlsafe(32)

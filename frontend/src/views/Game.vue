@@ -1,22 +1,24 @@
 <template>
         <navbar />
 
-        <main class="w-full flex flex-col min-h-screen h-screen p-6 space-y-4">
-            <scoreboard />
+        <main class="w-full flex flex-col min-h-screen h-screen p-6 space-y-4 bg-gray-100">
+            {{ storeData }}
+            <scoreboard v-if="players.length === 2" :players="players" />
+
             <div class="w-full flex h-full space-x-4">
                 <div class="w-full flex flex-col space-y-4">
-                    <div class="w-full h-full space-x-2 flex">
+                    <div class="w-full h-full space-x-2 flex p-4 rounded" style="background: rgb(255,233,190); background: linear-gradient(0deg, rgba(255,233,190,1) 0%, rgba(236,198,126,1) 25%, rgba(237,200,130,1) 75%, rgba(255,233,190,1) 100%);">
                         <div class="space-y-2 w-full h-full flex flex-col" v-for ="i in 15" :key ="i">
-                            <board class="bg-gray-300 w-full min-h-24 h-full p-1 flex items-center justify-center" v-for ="j in 15" :key ="j" :id="loc(j, i)" />
+                            <board-square class="w-full min-h-24 h-full p-1 flex items-center justify-center" style="background: rgba(243, 244, 246, 0.5)" v-for ="j in 15" :key ="j" :id="squareId(i, j)" />
                         </div>
                     </div>
 
-                    <board v-if="letters" class="w-full p-2 bg-gray-300 h-32 flex space-x-2" :id="0">
-                        <card v-for="i in 7" :key="i" :id="i" :letter="letters[i-1]" :draggable="true"/>
-                    </board>
+                    <div class="w-full p-2 bg-green-600 shadow-inner rounded h-32 flex space-x-2">
+                        <card v-for="(tile, i) in tiles" :key="tile" :letter="tile" :id="i" :draggable="true"/>
+                    </div>
                 </div>
 
-                <div class="w-full flex flex-col">
+                <div class="w-1/2 flex flex-col">
                     <chatbox :messages="chatMessages" @update:messages="this.sendChatMessage($event)" />
 
                     <div v-if="piecePlaced" class="flex space-x-2">
@@ -29,32 +31,27 @@
 </template>
 
 <script>
-import Board from '@/components/Board.vue'
+import BoardSquare from '@/components/BoardSquare.vue'
 import Card from '@/components/Card.vue'
 import Navbar from '@/components/Navbar.vue'
 import Chatbox from '@/components/Chatbox.vue'
 import Scoreboard from '@/components/Scoreboard.vue'
-
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 export default{
     name: "Game",
 
     data() {
         return {
-            alphabet,
-            maxId: 0,
-            letters: [],
             chatMessages: [],
-            player: {
-                name: "HarryLees",
-            },
             socket: null,
+            gameData: null,
+            placed: false,
+            localBoard: null,
         }
     },
 
     components:{
-        Board,
+        BoardSquare,
         Card,
         Navbar,
         Chatbox,
@@ -62,28 +59,29 @@ export default{
     },
 
     methods: {
-        loc(x, y) {
-            // method to return the square ID given the x, y position on the board
-            return 15 * x + y
+        squareId(x, y) {
+            return `${(x-1).toString()},${(y-1).toString()}`
         },
 
         resetBoard() {
-            this.$store.dispatch("resetBoard");
+            this.$store.commit("board/updateBoard", JSON.parse(JSON.stringify(this.gameData.board)));
+        },
+
+        updateError(data) {
+            alert(data.message);
+            this.resetBoard();
+        },
+
+        updateGame(data) {
+            this.gameData = data;
+            this.resetBoard();
         },
 
         nextTurn() {
-            this.$store.dispatch("nextTurn");
-            this.generatePieces();
-        },
-
-        generatePieces() {
-            let letters = [];
-            for (let i=0; i<7; i++) {
-                let letter = this.alphabet[Math.floor(Math.random() * 26)];
-                letters.push(letter);
-                this.maxId += 1;
-            }
-            this.letters = letters;
+            this.socket.send(JSON.stringify({
+                type: "gameUpdate",
+                board: this.$store.state.board.board,
+            }))
         },
 
         sendChatMessage(message) {
@@ -93,25 +91,27 @@ export default{
         receiveChatMessage(message) {
             this.chatMessages.push(message);
         },
-
-        processMessage(data) {
-            if (data.type === "playerJoin" && data.player.name !== this.player.name) {
-                this.receiveChatMessage(data);
-            }
-
-            if (data.type === "message") {
-                this.receiveChatMessage(data);
-            }
-
-            if (data.type === "playerLeft") {
-                this.receiveChatMessage(data);
-            }
-        },
     },
 
     computed: {
-        boardArray() {
+        storeData() {
             return this.$store.state.board;
+        },
+
+        tiles() {
+            if (this.gameData === null)
+                return [];
+
+            for (let player of this.gameData.players)
+                if (player.name == this.user)
+                    return player.tiles;
+            return [];
+        },
+
+        players() {
+            if (this.gameData == null)
+                return [];
+            return this.gameData.players;
         },
 
         piecePlaced() {
@@ -132,26 +132,29 @@ export default{
         },
     },
 
-    created() {
-        this.generatePieces();
-    },
-
     mounted() {
-        this.socket = new WebSocket(`ws://localhost:8000/api/game/ws/${this.$route.game_id}`);
-        console.log('user:', this.user);
+        this.socket = new WebSocket(`ws://localhost:8000/api/game/ws/${this.$route.params.game_id}`);
+
         this.socket.addEventListener("open", () => {
             this.socket.send(JSON.stringify({
                 type: "playerJoin",
-                player: {
-                    name: this.user,
-                },
-                sentAt: new Date().toLocaleTimeString('en-GB'),
+                player: this.user,
             }))
-            console.log("joined room");
         })
 
         this.socket.addEventListener("message", (event) => {
-            this.processMessage(JSON.parse(event.data));
+            let data = JSON.parse(event.data);
+            switch(data.type) {
+                case "gameUpdate":
+                    this.updateGame(data);
+                    break;
+                case "message":
+                    this.receiveChatMessage(data);
+                    break;
+                case "updateError":
+                    this.updateError(data);
+                    break;
+            }
         })
     },
 }
