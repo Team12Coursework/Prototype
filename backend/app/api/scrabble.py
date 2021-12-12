@@ -1,5 +1,5 @@
 import json
-from typing import Dict
+from typing import Dict, Optional, List
 import numpy as np
 
 points: Dict[str, int] = {
@@ -7,9 +7,9 @@ points: Dict[str, int] = {
     'O': 1, 'P': 4, 'Q': 10, 'R': 1, 'S': 1, 'T': 1, 'U': 2, 'V': 5, 'W': 5, 'X': 10, 'Y': 4, 'Z': 8
 }
 
-def construct_empty_board() -> np.ndarray:
+def construct_empty_board() -> List[List[Optional[str]]]:
     """construct a 15x15 NumPy array to represent the board"""
-    return np.zeros((15, 15), dtype=np.int16)
+    return [[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] for _ in range(15)]
 
 def calculate_points(word: str) -> int:
     """return the number of points the given word is worth"""
@@ -78,23 +78,11 @@ def find_word(arr1, arr2, turn: int):
         return ""
     elif (turn > 0) and (check1 == 0) and (check2 == 0):
         return ""
-    else:
-        # For now it searches the JSON file
-        with open('words_dictionary.json') as file:
-            data = json.load(file)
+    return word
 
-        for i in data:
-            if str(i).upper() == word:
-                return word
-
-    return ""
 
 def valid_start(board: np.ndarray) -> bool:
     """checks if the start of the game is valid the first letter
-    must be placed in the middle of the board (7, 7), the rest of
-    the letters must be placed across or down from the center."""
+    must be placed in the middle of the board (7, 7)"""
 
-    if board[7][7]:
-        if (board[6][7] is None) and (board[7][6] is None):
-            return True
-    return False
+    return board[7][7]
