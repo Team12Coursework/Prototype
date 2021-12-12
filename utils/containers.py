@@ -49,17 +49,12 @@ def create_schema() -> None:
 
 def add_postgres_dictionary() -> None:
     """function to insert the dictionary into the PostgreSQL database"""
-    with open('data/dictionary.json') as file:
-        data: Dict[str, str] = json.load(file)
-        formatted: List[List[str]] = [[key, data[key][0]] for key in data.keys()]
+    with open('data/dictionary.txt') as file:
+        data: List[str] = file.readlines()
 
-    args = []
-    for f in formatted:
-        if ' ' in f[0]:
-            continue
-        args.append(f"($${f[0]}$$, $${f[1]}$$)")
-    args = ','.join(args)
-
+    # formatting args into a COPY statement instead of an INSERT will dramatically
+    # decrease insert time.
+    args = ','.join(f"($${line}$$, NULL)" for line in data)
     with psycopg2.connect(**connection_auth) as connection:
         with connection.cursor() as cursor:
             cursor.execute(f'INSERT INTO words_tab VALUES {args}')
