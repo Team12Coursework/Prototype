@@ -67,13 +67,21 @@ export default{
             this.$store.commit("board/updateBoard", JSON.parse(JSON.stringify(this.gameData.board)));
         },
 
+        updateError(data) {
+            alert(data.message);
+            this.resetBoard();
+        },
+
         updateGame(data) {
-            console.log(this.$store);
             this.gameData = data;
             this.resetBoard();
         },
 
         nextTurn() {
+            this.socket.send(JSON.stringify({
+                type: "gameUpdate",
+                board: this.$store.state.board.board,
+            }))
         },
 
         sendChatMessage(message) {
@@ -142,6 +150,9 @@ export default{
                     break;
                 case "message":
                     this.receiveChatMessage(data);
+                    break;
+                case "updateError":
+                    this.updateError(data);
                     break;
             }
         })
