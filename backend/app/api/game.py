@@ -14,8 +14,10 @@ connection_manager = ConnectionManager()
 
 """file holds all of the routes for the game behaviour."""
 
+
 def current_time() -> str:
     return datetime.datetime.now().strftime('%H:%M:%S')
+
 
 def filter_message(data: Dict[str, str]) -> Dict[str, str]:
     """function to filter chat messages"""
@@ -35,6 +37,7 @@ def filter_message(data: Dict[str, str]) -> Dict[str, str]:
     data.update({'message': censoredMessage})
     return json.dumps(data)
 
+
 def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[str, str]:
     """process the next turn, this function doesn't return anything to the client"""
     game: GameManager = connection_manager.connected[room_id]
@@ -44,6 +47,7 @@ def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[st
     except InvalidWordException as error:
         print(error)
         return {'type': 'updateError', 'message': 'invalid word placed'}
+
 
 async def process_room_join(websocket, decoded, room_id: str) -> None:
     """function to process a player joining the room"""
