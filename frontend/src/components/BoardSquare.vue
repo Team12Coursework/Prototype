@@ -1,11 +1,10 @@
 <template>
-    <div class="board rounded" @dragover.prevent @drop.prevent="drop">
-        <div v-if="letter" class="font-bold w-full h-full flex items-center justify-center bg-blue-500 text-gray-50 rounded">
+    <div class="rounded" @dragover.prevent @drop.prevent="drop" style="aspect-ratio: 1/1">
+        <div v-if="letter" class="font-bold h-full w-full flex items-center justify-center bg-blue-500 text-gray-50 rounded">
             <p class="w-full h-full flex items-center justify-center">
                 {{ letter }}
             </p>
         </div>
-        <p v-else class="w-full h-full flex items-center justify-center text-gray-500">{{ id }}</p>
     </div>
 </template>
 
