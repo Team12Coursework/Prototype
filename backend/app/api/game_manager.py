@@ -141,15 +141,11 @@ class GameManager:
         raising this exception will ensure that the board is not mutated in any way, and it will remain
         on the current player's turn."""
         # edge case that it's the first turn and the word placed isn't in the right place on the board
-        print('here:', board)
         if self.turn == 0:
             if not valid_start(board):
                 raise InvalidStartException()
-        print('past InvalidStartException')
         # find the word on the Scrabble board, and check if it's valid.
         word: str = find_word(self.old_board, board, self.turn)
-        print('word:', word)
-        print('word ^')
         if not word:
             raise InvalidWordException()
         self.old_board = board
