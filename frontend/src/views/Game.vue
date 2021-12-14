@@ -1,29 +1,30 @@
 <template>
         <navbar />
-        <waiting-modal v-if="players.length < 2" />
 
-        <main class="w-full flex flex-col min-h-screen h-screen p-6 space-y-4 bg-gray-100">
-            <scoreboard v-if="players.length === 2" :players="players" />
+        <main class="w-full flex flex-col items-center min-h-screen h-screen p-6 space-y-4 bg-gray-100">
+            <div class="max-w-screen-2xl space-y-4 w-full flex flex-col">
+                <scoreboard v-if="players.length === 2" :players="players" />
 
-            <div class="w-full flex h-full space-x-4">
-                <div class="w-full flex flex-col space-y-4">
-                    <div class="w-full h-full space-x-2 flex p-4 rounded" style="background: rgb(255,233,190); background: linear-gradient(0deg, rgba(255,233,190,1) 0%, rgba(236,198,126,1) 25%, rgba(237,200,130,1) 75%, rgba(255,233,190,1) 100%);">
-                        <div class="space-y-2 w-full h-full flex flex-col" v-for ="i in 15" :key ="i">
-                            <board-square class="w-full min-h-24 h-full p-1 flex items-center justify-center" style="background: rgba(243, 244, 246, 0.5)" v-for ="j in 15" :key ="j" :id="squareId(i, j)" />
+                <div class="w-full flex h-full justify-center space-x-4">
+                    <div class="w-full flex flex-col space-y-4">
+                        <div class="w-full space-x-2 flex p-4 rounded" style="background: rgb(255,233,190); background: linear-gradient(0deg, rgba(255,233,190,1) 0%, rgba(236,198,126,1) 25%, rgba(237,200,130,1) 75%, rgba(255,233,190,1) 100%);">
+                            <div class="space-y-2 w-full flex flex-col" v-for ="i in 15" :key ="i">
+                                <board-square class="w-full p-1 flex items-center justify-center" :style="tileColour(squareId(i, j))" v-for ="j in 15" :key ="j" :id="squareId(i, j)" />
+                            </div>
+                        </div>
+
+                        <div class="w-full p-2 bg-green-600 shadow-inner rounded h-24 flex space-x-2">
+                            <card v-for="(tile, i) in tiles" :key="tile" :letter="tile" :id="i" :draggable="true"/>
                         </div>
                     </div>
 
-                    <div class="w-full p-2 bg-green-600 shadow-inner rounded h-32 flex space-x-2">
-                        <card v-for="(tile, i) in tiles" :key="tile" :letter="tile" :id="i" :draggable="true"/>
-                    </div>
-                </div>
+                    <div class="w-1/2 flex flex-col">
+                        <chatbox :messages="chatMessages" @update:messages="this.sendChatMessage($event)" />
 
-                <div class="w-1/2 flex flex-col">
-                    <chatbox :messages="chatMessages" @update:messages="this.sendChatMessage($event)" />
-
-                    <div v-if="piecePlaced" class="flex space-x-2">
-                        <button @click="resetBoard" class="cursor-pointer p-2 bg-blue-500 rounded text-white">Reset</button>
-                        <button @click="nextTurn" class="cursor-pointer p-2 bg-blue-500 rounded text-white">Next Turn</button>
+                        <div v-if="piecePlaced" class="flex space-x-2 w-full">
+                            <button @click="resetBoard" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
+                            <button @click="nextTurn" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -36,7 +37,6 @@ import Card from '@/components/Card.vue'
 import Navbar from '@/components/Navbar.vue'
 import Chatbox from '@/components/Chatbox.vue'
 import Scoreboard from '@/components/Scoreboard.vue'
-import WaitingModal from '@/components/WaitingModal.vue'
 
 export default{
     name: "Game",
@@ -57,12 +57,48 @@ export default{
         Navbar,
         Chatbox,
         Scoreboard,
-        WaitingModal,
     },
 
     methods: {
         squareId(x, y) {
             return `${(x-1).toString()},${(y-1).toString()}`
+        },
+
+        tileColour(squareId) {
+            const RED_TILES = new Set([ "0,0", "0,7", "7,14", "14,7", "14,14", "0,14", "14,0", "7,0", "7,7"]);
+            const BLUE_TILES = new Set([
+                "11,0", "3,0", "7,3", "8,2", "9,1", "6,2", "5,1", // top side
+                "0,11", "0,3", "3,7", "2,8", "1,9", "2,6", "1,5", // left side
+                "11,14", "3,14", "7,11", "8,12", "9,13", "6,12", "5,13", // bottom side
+                "14,11", "14,3", "11,7", "12,8", "13,9", "12,6", "13,5", // left side
+            ]);
+
+            // check if square is one of the predefined red tiles
+            if (RED_TILES.has(squareId)) {
+                return "background-color: rgba(248, 113, 113, 1)";
+            }
+
+            // check if square is one of the squares surrounding the red tiles
+            // on the edge of the board.
+            if (BLUE_TILES.has(squareId)) {
+                return "background-color: rgba(96, 165, 250, 0.3)";
+            }
+
+            let idx = squareId.split(",");
+            let x = parseInt(idx[0]);
+            let y = parseInt(idx[1]);
+
+            // check if square is on the diagonal
+            if (x === y || x === 14 - y) {
+                // check if diagonals are within 3 tiles of the center
+                if (Math.abs(x-7) < 3 && Math.abs(y-7) < 3)
+                    return "background-color: rgba(96, 165, 250, 0.3)";
+                else
+                    return "background-color: rgba(248, 113, 113, 0.3)";
+            }
+
+
+            return "background: rgba(243, 244, 246, 0.5)";
         },
 
         resetBoard() {
