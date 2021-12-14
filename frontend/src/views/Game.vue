@@ -1,8 +1,8 @@
 <template>
         <navbar />
+        <waiting-modal v-if="players.length < 2" />
 
         <main class="w-full flex flex-col min-h-screen h-screen p-6 space-y-4 bg-gray-100">
-            {{ storeData }}
             <scoreboard v-if="players.length === 2" :players="players" />
 
             <div class="w-full flex h-full space-x-4">
@@ -36,6 +36,7 @@ import Card from '@/components/Card.vue'
 import Navbar from '@/components/Navbar.vue'
 import Chatbox from '@/components/Chatbox.vue'
 import Scoreboard from '@/components/Scoreboard.vue'
+import WaitingModal from '@/components/WaitingModal.vue'
 
 export default{
     name: "Game",
@@ -56,6 +57,7 @@ export default{
         Navbar,
         Chatbox,
         Scoreboard,
+        WaitingModal,
     },
 
     methods: {
