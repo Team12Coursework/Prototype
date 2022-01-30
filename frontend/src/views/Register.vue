@@ -1,5 +1,5 @@
 <template>
-    <central-floating-layout>
+    <logging-page-layout>
         <div class="bg-white rounded border p-5 flex flex-col space-y-4 shadow">
             <h1 class="text-3xl text-gray-800 font-semibold">Register</h1>
 
@@ -24,50 +24,15 @@
                 <input type="submit" value="Create Account" class="rounded p-2 text-white bg-blue-500" />
             </form>
         </div>
-    </central-floating-layout>
+    </logging-page-layout>
 </template>
 
 <script>
-import CentralFloatingLayout from "@/layouts/CentralFloatingLayout.vue";
+import LoggingPageLayout from "@/layouts/LoggingPageLayout.vue";
 
 export default {
     components: {
-        CentralFloatingLayout,
-    },
-
-    data() {
-        return {
-            user: {
-                username: "",
-                password: "",
-            }
-        }
-    },
-
-    computed: {
-        loggedIn() {
-            return this.$store.state.auth.status.loggedIn;
-        },
-    },
-
-    mounted() {
-        if (this.loggedIn) {
-            this.$router.push("/");
-        }
-    },
-
-    methods: {
-        handleRegister(e) {
-            e.preventDefault();
-            this.$store.dispatch("auth/register", this.user).then(
-                () => {
-                    this.$router.push("/login");
-                },
-                () => {
-                    alert("something went wrong");
-                },
-            );
-        }
+        LoggingPageLayout,
     }
 }
 </script>
