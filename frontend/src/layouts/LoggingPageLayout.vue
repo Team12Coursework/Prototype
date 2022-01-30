@@ -1,6 +1,6 @@
 <template>
     <main class="orange-background-color flex flex-col h-screen">
-        <navbar />
+        <navbar-logging />
 
         <div class="flex flex-col justify-center items-center flex-grow">
             <slot>
@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import Navbar from "@/components/Navbar.vue";
+import NavbarLogging from "@/components/NavbarLogging.vue";
 
 export default {
-    name: "CentralFloatingLayout",
-    components: { Navbar },
+    name: "LoggingPageLayout",
+    components: { NavbarLogging },
 }
 </script>
