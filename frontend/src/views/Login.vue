@@ -1,5 +1,5 @@
 <template>
-    <central-floating-layout>
+    <logging-page-layout>
         <div class="bg-white rounded border p-5 flex flex-col space-y-4 shadow">
             <h1 class="text-3xl text-gray-800 font-semibold">Login</h1>
 
@@ -17,51 +17,15 @@
                 <input type="submit" value="Login" class="rounded p-2 text-white bg-blue-500 cursor-pointer" />
             </form>
         </div>
-    </central-floating-layout>
+    </logging-page-layout>
 </template>
 
 <script>
-import CentralFloatingLayout from "@/layouts/CentralFloatingLayout.vue";
+import LoggingPageLayout from "@/layouts/LoggingPageLayout.vue";
 
 export default {
     components: {
-        CentralFloatingLayout,
-    },
-
-    data() {
-        return {
-            user: {
-                username: "",
-                password: "",
-            }
-        }
-    },
-
-    computed: {
-        loggedIn() {
-            return this.$store.state.auth.status.loggedIn;
-        },
-    },
-
-    created() {
-        if (this.loggedIn) {
-            this.$router.push("/");
-        }
-    },
-
-    methods: {
-        handleLogin(e) {
-            console.log("called");
-            this.$store.dispatch("auth/login", this.user).then(
-                () => {
-                    this.$router.push("/");
-                },
-                () => {
-                    alert("username or password incorrect");
-                }
-            )
-            e.preventDefault();
-        }
+        LoggingPageLayout,
     }
 }
 </script>
