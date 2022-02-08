@@ -12,3 +12,8 @@
 	max-width: 120px;
 }
 
+.bg-login{
+	background-image: url(/img/bg-login.997f894f.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
