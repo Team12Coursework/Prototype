@@ -13,7 +13,8 @@
 }
 
 .bg-login{
-	background-image: url(/img/bg-login.997f894f.jpg);
+	background-image: url(https://wallpaperaccess.com/full/2891056.jpg);
     background-repeat: no-repeat;
     background-size: cover;
+    filter: brightness(0.2);
 }
