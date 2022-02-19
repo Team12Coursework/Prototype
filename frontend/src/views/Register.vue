@@ -64,3 +64,8 @@ export default {
     }
 }
 </script>
+<style scoped>
+.logo-max-width{
+    max-width: 120px;
+}
+</style>

@@ -3,18 +3,3 @@
 @tailwind components;
 
 @tailwind utilities;
-
-.orange-background-color{
-	background: #EE6352;
-}
-
-.logo-max-width{
-	max-width: 120px;
-}
-
-.bg-login{
-	background-image: url(https://wallpaperaccess.com/full/2891056.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    filter: brightness(0.2);
-}
