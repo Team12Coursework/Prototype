@@ -1,7 +1,9 @@
 <template>
     <logging-page-layout>
         <div class="bg-white h-full border p-5 flex flex-col space-y-4 shadow">
+            <div class="mx-auto">
             <img class="logo-max-width" src='../assets/Character_Connect_Logo.jpg'>
+            </div>
             <div class="flex-grow"></div>
             <div class="justify-center flex-grow flex flex-col space-y-4">
             <h1 class="text-3xl text-gray-800 font-semibold">Login</h1>

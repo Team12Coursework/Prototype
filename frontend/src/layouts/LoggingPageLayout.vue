@@ -40,13 +40,14 @@ export default {
 	background: white;
 	color: black;
 	padding: 12px;
+	border-radius: 10px;
 }
 .side-info{
 	max-width: 80%;
-    font-size: 32px;
+    font-size: 16px;
     color: white;
-    border: 8px solid white;
     padding: 2em;
+    border-radius: 20px;
     background: #00000061;
     text-align: center;
     font-weight: bold;
