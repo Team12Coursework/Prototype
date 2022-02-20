@@ -5,18 +5,17 @@
                 <div class="w-full flex justify-around flex-col flex-grow items-center max-w-screen-md mx-auto">
                 <div class="space-y-4">
                 <div class="flex justify-center space-x-2 logo-container">
-                    <img src="../assets/Character_Connect_Logo.jpg" />
+                    <img class="logo" src="../assets/Character_Connect_Logo.jpg" />
                     <img class="hand" src="../assets/hand.png" />
                     <img class="bulb" src="../assets/bulb.png" />
                 </div>
                 </div>
                 <div class="flex flex-col space-y-4">
-                <router-link class="button" to='/gamemodes'>New Game</router-link>
-                <router-link class="button" to='/gamemodes'>Join Game</router-link>
-                <router-link class="button" to='/gamemodes'>Leaderboard</router-link>
+                <router-link class="button" to='/gamemodes'>NEW GAME</router-link>
+                <router-link class="button" to='/gamemodes'>JOIN GAME</router-link>
+                <router-link class="button" to='/gamemodes'>LEADERBOARD</router-link>
                 </div>
                 </div>
-                <img class="bag" src="../assets/letterBag.png" />
         </div>
     </main>
 </template>
@@ -34,19 +33,29 @@
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&effect=anaglyph');
 .button {
-    @apply border-4 text-black border-black text-2xl w-full text-center rounded-full font-bold py-4 px-16 bg-white hover:bg-black hover:text-white duration-200
+    @apply text-white text-2xl w-full text-center rounded-full font-bold py-4 px-16 hover:bg-black hover:text-white duration-200
+}
+.button{
+	background-color:#4a4a4a47;
+	font-family: 'Shadows Into Light', cursive;
 }
 .bg-main-man{
-	background: url("../assets/menu.png");
+	background: url("../assets/menu-new.png");
 	background-size: cover;
+	background-position: bottom;
 }
 .logo-container{
 	position: relative;
 }
+.logo-container .logo{
+	max-width: 300px;
+}
 .logo-container .hand{
 	position: absolute;
-	left: -268px;
+	max-width: 150px;
+	left: -120px;
 	transition: 0.3s all;
 }
 
@@ -56,7 +65,7 @@
 
 .logo-container .bulb{
 	position: absolute;
-	right: -134px;
+	right: -55px;
     height: 100%;
     transition: 0.3s all;
 }
