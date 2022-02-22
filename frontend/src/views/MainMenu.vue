@@ -11,9 +11,9 @@
                 </div>
                 </div>
                 <div class="flex flex-col space-y-4">
-                <router-link class="button" to='/gamemodes'>NEW GAME</router-link>
-                <router-link class="button" to='/gamemodes'>JOIN GAME</router-link>
-                <router-link class="button" to='/gamemodes'>LEADERBOARD</router-link>
+                <router-link class="button bg-blue-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/happy.gif" />NEW GAME</router-link>
+                <router-link class="button bg-green-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/happy.gif" />JOIN GAME</router-link>
+                <router-link class="button bg-red-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/happy.gif" />LEADERBOARD</router-link>
                 </div>
                 </div>
         </div>
@@ -38,13 +38,27 @@
     @apply text-white text-2xl w-full text-center rounded-full font-bold py-4 px-16 hover:bg-black hover:text-white duration-200
 }
 .button{
-	background-color:#4a4a4a47;
 	font-family: 'Shadows Into Light', cursive;
+	position: relative;
+}
+.button:hover .feature-for-kids{
+	right: -50px;
+	height: 100px;
+	z-index: 1;
 }
 .bg-main-man{
-	background: url("../assets/menu-new.png");
+	background: url("../assets/new-menu-clean.png");
 	background-size: cover;
 	background-position: bottom;
+}
+.feature-for-kids{
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	height: 0;
+	width: auto;
+	z-index: -1;
+	transition: 0.3s all;
 }
 .logo-container{
 	position: relative;
