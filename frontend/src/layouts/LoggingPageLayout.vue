@@ -43,7 +43,7 @@ export default {
 	border-radius: 10px;
 }
 .side-info{
-	max-width: 80%;
+	max-width: 600px;
     font-size: 16px;
     color: white;
     padding: 2em;

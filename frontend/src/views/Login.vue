@@ -4,7 +4,6 @@
             <div class="mx-auto">
             <img class="logo-max-width" src='../assets/Character_Connect_Logo.jpg'>
             </div>
-            <div class="flex-grow"></div>
             <div class="justify-center flex-grow flex flex-col space-y-4">
             <h1 class="text-3xl text-gray-800 font-semibold">Login</h1>
             <p class="text-xs">Need a CharacterConnect account?<br><a class="underline underline-offset-2 text-blue-400 hover:text-blue-600" href="/register">Create an account</a></p>
@@ -18,7 +17,7 @@
                 <label class="mb-2" for="password">Password</label>
                 <input type="password" name="password" class="rounded h-8 border p-2" />
             </div>
-            <input type="submit" value="Login" class="cursor-pointer hover:bg-blue-700 rounded p-2 text-white bg-blue-500" />
+            <input type="submit" value="LOGIN" class="cursor-pointer font-bold hover:bg-blue-700 rounded p-2 text-white bg-blue-500" />
             </div>
             <div class="flex flex-col flex-grow">
             <div class="flex-grow"></div>

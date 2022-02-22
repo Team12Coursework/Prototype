@@ -1,8 +1,9 @@
 <template>
-    <logging-page-layout>
+    <register-page-layout>
         <div class="bg-white h-full border p-5 flex flex-col space-y-4 shadow">
-        <img class="logo-max-width" src='../assets/Character_Connect_Logo.jpg'>
-            <div class="flex-grow"></div>
+        <div class="mx-auto">
+            <img class="logo-max-width" src='../assets/Character_Connect_Logo.jpg'>
+            </div>
             <div class="justify-center flex-grow flex flex-col space-y-4">
             <h1 class="text-3xl text-gray-800 font-semibold">Register</h1>
 <p class="text-xs">Already have an account?<br><a class="underline underline-offset-2 text-blue-400 hover:text-blue-600" href="/login">Log in</a></p>
@@ -52,15 +53,15 @@
             </div>
             </div>
         </div>
-    </logging-page-layout>
+    </register-page-layout>
 </template>
 
 <script>
-import LoggingPageLayout from "@/layouts/LoggingPageLayout.vue";
+import RegisterPageLayout from "@/layouts/RegisterPageLayout.vue";
 
 export default {
     components: {
-        LoggingPageLayout,
+        RegisterPageLayout,
     }
 }
 </script>
