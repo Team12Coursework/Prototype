@@ -173,3 +173,17 @@ class GameManager:
             'gameRunning':      self.game_running,
             'winner':           self.winner,
         }
+
+
+    def free_letter_pick(self, player : Player):
+        player.points -=  2
+
+    def two_random_letters(self, player : Player):
+        player.points -= 4
+        new_tiles = self.tileset.draw(2)
+        player.tiles.append(new_tiles)
+
+    def change_letters_available(self , player: Player):
+        player.points -= 3
+        player.tiles = self.tileset.draw(self.num_tiles)
+        
