@@ -84,6 +84,14 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
                     await connection_manager.broadcast(room, json.dumps(state))
                 elif state['type'] == 'updateError':
                     await connection_manager.send_personal_message(json.dumps(state), websocket)
+            elif decoded['type'] == "perkActive":
+                    if state['type'] == 'oneRandomLetter':
+                        GameManager.one_random_letter(decoded['player'])
+                    elif state['type'] == 'twoRandomLetters':
+                        GameManager.two_random_letters(decoded['player'])
+                    elif state['type'] == 'changeLetters':
+                        GameManager.change_letters_available(decoded['player'])
+                        
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
         await connection_manager.disconnect(room, websocket)
         await connection_manager.broadcast(room, json.dumps({'type': 'playerLeft'}))
