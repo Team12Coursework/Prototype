@@ -1,5 +1,5 @@
 <template>
-    <nav class="bg-gray-100 border-b shadow-sm">
+    <nav class="bg-gradient-to-r from-blue-400 to-gray-100 border-b shadow-sm">
         <div class="px-2 sm:px-6 lg:px-8">
             <div class="relative flex items-center justify-between h-14">
 

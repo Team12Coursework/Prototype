@@ -1,7 +1,7 @@
 <template>
         <navbar />
 
-        <main class="w-full flex flex-col items-center min-h-screen h-screen p-6 space-y-4 bg-gray-100">
+        <main class="w-full flex flex-col items-center min-h-screen h-screen p-6 space-y-4  bg-yellow-200 bg-opacity-60">
             <div class="max-w-screen-2xl space-y-4 w-full flex flex-col">
                 <scoreboard v-if="players.length === 2" :players="players" />
 
@@ -13,7 +13,7 @@
                             </div>
                         </div>
 
-                        <div class="w-full p-2 bg-green-600 shadow-inner rounded h-24 flex space-x-2">
+                        <div class="w-full p-2 bg-black shadow-inner rounded h-24 flex space-x-2">
                             <card v-for="(tile, i) in tiles" :key="tile" :letter="tile" :id="i" :draggable="true"/>
                         </div>
                     </div>
