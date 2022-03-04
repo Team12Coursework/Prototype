@@ -23,6 +23,12 @@ class GameFull(Exception):
     """raised when a player tries to join a game that already has two players."""
 
 
+class InvalidPerkException(Exception):
+    """raised when a perk is activated when the player
+    has exceeded the maximum number of times they're allowed to
+    activate a perk"""
+
+
 @dataclasses.dataclass
 class Player:
     """dataclass to hold some attributes about each player in the lobby"""
@@ -30,6 +36,8 @@ class Player:
     socket: WebSocket
     points: int = 0
     tiles: List[str] = dataclasses.field(default_factory=list)
+    numPerksAllowed: int = 3
+    numPerksUsed: int = 0
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -173,3 +181,29 @@ class GameManager:
             'gameRunning':      self.game_running,
             'winner':           self.winner,
         }
+
+    def extra_letter_perk(self, numLetters: int) -> None:
+        """adds a specific no. of tiles to the players tileset, 
+        each tile costs 2 points"""
+        player = self._players[self.current_player]
+        if player.points < 2 * numLetters:
+            raise ValueError("Not enough points for the perk")
+        elif player.numPerksUsed >= player.numPerksAllowed:
+            raise InvalidPerkException()
+        else:
+            player.points -=  2 * numLetters
+            player.numPerksUsed += 1
+            new_tile = self.tileset.draw(numLetters)
+            player.tiles.append(new_tile)
+
+    def change_letters_perk(self) -> None:
+        if player.points < 3:
+            raise ValueError("Not enough points for the perk")
+        elif player.numPerksUsed >= player.numPerksAllowed:
+            raise InvalidPerkException()
+        else:
+            player = self._players[self.current_player]
+            player.numPerksUsed += 1
+            player.points -= 3
+            player.tiles = self.tileset.draw(self.num_tiles)
+        
