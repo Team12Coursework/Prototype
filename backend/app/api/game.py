@@ -92,6 +92,7 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
                         game.extra_letters_perk(2)
                     elif state['type'] == 'changeLetters':
                         game.change_letters_perk()
+                    await connection_manager.send_personal_message(game.asdict(), websocket)
                         
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
         await connection_manager.disconnect(room, websocket)
