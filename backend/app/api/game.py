@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Any
 
 from app.api.connection_manager import ConnectionManager
 from app.api.game_manager import GameManager, Player, InvalidWordException
@@ -17,6 +17,12 @@ connection_manager = ConnectionManager()
 
 def current_time() -> str:
     return datetime.datetime.now().strftime('%H:%M:%S')
+
+async def handle_perk_error(callback: Callable[Any, Any], connection_manager, websocket, *args) -> None:
+    try:
+        callback(*args)
+    except ValueError as error:
+        await connection_manager.send_personal_message(json.dumps({"type": "gameError", "message": str(error)}), websocket)
 
 
 def filter_message(data: Dict[str, str]) -> Dict[str, str]:
@@ -86,14 +92,13 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
                     await connection_manager.send_personal_message(json.dumps(state), websocket)
             elif decoded['type'] == "perkActive":
                     game: GameManager = connection_manager.connected[room]
-                    if state['type'] == 'oneRandomLetter':
-                        game.extra_letter_perk(1)
-                    elif state['type'] == 'twoRandomLetters':
-                        game.extra_letters_perk(2)
-                    elif state['type'] == 'changeLetters':
+                    if decoded['subtype'] == 'oneRandomLetter':
+                        await handle_perk_error(game.extra_letter_perk, connection_manager, websocket, 1)
+                    elif decoded['subtype'] == 'twoRandomLetters':
+                        await handle_perk_error(game.extra_letter_perk, connection_manager, websocket, 2)
+                    elif decoded['subtype'] == 'changeLetters':
                         game.change_letters_perk()
                     await connection_manager.send_personal_message(game.asdict(), websocket)
-                        
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
         await connection_manager.disconnect(room, websocket)
         await connection_manager.broadcast(room, json.dumps({'type': 'playerLeft'}))
