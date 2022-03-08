@@ -1,6 +1,6 @@
 from sqlalchemy.orm.session import Session
 
-from app.database.session import SessionLocal
+from ..database.session import SessionLocal
 
 """
 file holds all of the API dependancies

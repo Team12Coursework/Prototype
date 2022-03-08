@@ -1,7 +1,7 @@
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.core.config import config
+from ..core.config import config
 
 # create a pool of database connections which
 # can be used throughout the application

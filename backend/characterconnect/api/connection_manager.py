@@ -1,9 +1,10 @@
 import json
 from typing import Dict
-from app.api.game_manager import GameManager
 
-from app import schemas
 from fastapi import WebSocket
+
+from .game_manager import GameManager
+from .. import schemas
 
 
 class RoomFull(Exception):
