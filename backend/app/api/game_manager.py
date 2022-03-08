@@ -3,8 +3,6 @@ from typing import Dict, List, MutableSet, Tuple, Optional
 import random
 import dataclasses
 
-import numpy as np
-
 from app.api.scrabble import find_word, valid_start, construct_empty_board, calculate_points
 from fastapi import WebSocket
 
@@ -95,9 +93,9 @@ class GameManager:
         # manage the players with an integer bounded to 0-1.
         self.current_player: int = 0
         self.turn: int = 0
-        self.board: np.ndarray = construct_empty_board()
+        self.board = construct_empty_board()
         # a copy of the board from the previous turn, used to calculate the changes in the board state.
-        self.old_board: np.ndarray = self.board
+        self.old_board = self.board
         # the number of points each player has.
         self.game_running: bool = False
         self.winner: Optional[int] = None

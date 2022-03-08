@@ -1,6 +1,4 @@
-import json
 from typing import Dict, Optional, List
-import numpy as np
 
 points: Dict[str, int] = {
     'A': 1, 'B': 4, 'C': 1, 'D': 2, 'E': 1, 'F': 3, 'G': 2, 'H': 3, 'I': 1, 'J': 8, 'K': 5, 'L': 1, 'M': 3, 'N': 1,
@@ -81,7 +79,7 @@ def find_word(arr1, arr2, turn: int):
     return word
 
 
-def valid_start(board: np.ndarray) -> bool:
+def valid_start(board) -> bool:
     """checks if the start of the game is valid the first letter
     must be placed in the middle of the board (7, 7)"""
 
