@@ -4,8 +4,15 @@ jobs:
   pytest:
     name: pytest
     runs-on: ubuntu-20.04
+    using: "composite"
     steps:
-      - cd backend
-      - python -m pip install poetry
-      - poetry install
-      - poetry run pytest
+      - run: cd backend
+        shell: bash
+      - run: python -m pip install poetry
+        shell: bash
+      - run: poetry install
+        shell: bash
+      - run: pip install .
+        shell: bash
+      - run: poetry run pytest
+        shell: bash
