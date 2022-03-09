@@ -1,10 +1,16 @@
 from __future__ import annotations
-from typing import Dict, List, MutableSet, Tuple, Optional
 import random
 import dataclasses
 
-from app.api.scrabble import find_word, valid_start, construct_empty_board, calculate_points
+from app.api.scrabble import (
+    find_word, valid_start,
+    construct_empty_board, calculate_points,
+    BoardT)
 from fastapi import WebSocket
+
+
+PlayerDictT = dict[str, str | int | list[str]]
+BoardDictT = dict[str, str | int | PlayerDictT]
 
 
 class InvalidWordException(Exception):
@@ -33,7 +39,7 @@ class Player:
     name: str
     socket: WebSocket
     points: int = 0
-    tiles: List[str] = dataclasses.field(default_factory=list)
+    tiles: list[str] = dataclasses.field(default_factory=list)
     numPerksAllowed: int = 3
     numPerksUsed: int = 0
 
@@ -43,28 +49,28 @@ class Player:
     def __repr__(self) -> str:
         return f'Player(name={self.name}, points={self.points})'
 
-    def asdict(self) -> Dict[str, str]:
+    def asdict(self) -> PlayerDictT:
         return {'name': self.name, 'points': self.points, 'tiles': self.tiles}
 
 
 class TileManager:
     """tile manager class will manage the deck of tiles for the game to draw upon"""
-    def __init__(self) -> TileManager:
+    def __init__(self) -> None:
         # dictionary holding the tile and the number of times the tile occurs
-        self.tiles: Dict[str, int] = {
+        self.tiles = {
             'E': 12, 'A': 9, 'I': 9, 'O': 8, 'N': 6, 'R': 6,
             'T': 6, 'L': 4,  'S': 4, 'U': 4, 'D': 4, 'G': 3,
             'B': 2, 'C': 2,  'M': 2, 'P': 2, 'F': 2, 'H': 2,
             'V': 2, 'W': 2,  'Y': 2, 'K': 1, 'J': 1, 'X': 1,
             'Q': 1, 'Z': 1,
         }
-        self.remaining_tiles: List[str] = list(self.tiles.keys())
+        self.remaining_tiles = list(self.tiles.keys())
 
-    def draw(self, n: int) -> List[str]:
+    def draw(self, n: int) -> list[str]:
         """draw n tiles from the available tileset"""
         if len(self.remaining_tiles) < n:
             raise IndexError(f'cannot remove {n} tiles from tileset, only {len(self.remaining_tiles)} tiles remaining')
-        letters: List[str] = []
+        letters: list[str] = []
         for _ in range(n):
             letter: str = random.choice(self.remaining_tiles)
             if self.tiles[letter] >= 1:
@@ -74,9 +80,9 @@ class TileManager:
             letters.append(letter)
         return letters
 
-    def draw_remaining(self) -> List[str]:
+    def draw_remaining(self) -> list[str]:
         """draws the remaining tiles from the deck"""
-        letters: List[str] = []
+        letters: list[str] = []
         for letter, num_remaining in self.tiles.items():
             if num_remaining == 0:
                 continue
@@ -87,7 +93,7 @@ class TileManager:
 class GameManager:
     """GameManager class takes care of all general game functions.
     The asdict function represents the entire game state, and should be sent to the client on every update"""
-    def __init__(self, game_id: int) -> GameManager:
+    def __init__(self, game_id: int) -> None:
         self.id: int = game_id
         self.tileset = TileManager()
         # manage the players with an integer bounded to 0-1.
@@ -98,8 +104,8 @@ class GameManager:
         self.old_board = self.board
         # the number of points each player has.
         self.game_running: bool = False
-        self.winner: Optional[int] = None
-        self._players: List[Optional[Player]] = [None, None]
+        self.winner: int | None = None
+        self._players: list[Player | None] = [None, None]
         self.num_tiles: int = 7
 
     @property
@@ -107,7 +113,7 @@ class GameManager:
         return len(self.players) == 2
 
     @property
-    def players(self) -> List[Player]:
+    def players(self) -> list[Player | None]:
         return list(filter(lambda x: x is not None, self._players))
 
     def add_player(self, player: Player) -> None:
@@ -141,18 +147,22 @@ class GameManager:
             player.tiles = self.tileset.draw(self.num_tiles)
         self.game_running = True
 
-    def next_turn(self, board: List[List[str]]) -> int:
+    def next_turn(self, board: BoardT) -> None:
         """advance the game state by a single turn, mutate the game board with the new word.
         this function will raise an InvalidGameStateException if the user places an invalid word.
         raising this exception will ensure that the board is not mutated in any way, and it will remain
         on the current player's turn."""
-        # edge case that it's the first turn and the word placed isn't in the right place on the board
+        # edge case that it's the first turn and the word placed
+        # isn't in the right place on the board.
+        # TODO: this should probably just raise a ValueError instead
         if self.turn == 0:
             if not valid_start(board):
                 raise InvalidStartException()
         # find the word on the Scrabble board, and check if it's valid.
-        word: str = find_word(self.old_board, board, self.turn)
+        word = find_word(self.old_board, board, self.turn)
         if not word:
+            # TODO: this should also probably just raise a ValueError,
+            # using a custom exception in this case is a bit overkill.
             raise InvalidWordException()
         self.old_board = board
         self.board = board
@@ -169,7 +179,7 @@ class GameManager:
         self.current_player = 1 - self.current_player
         return self.current_player
 
-    def asdict(self) -> Dict[str, str]:
+    def asdict(self) -> BoardDictT:
         return {
             'type':             'gameUpdate',
             'turn':             self.turn,
