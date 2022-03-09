@@ -4,6 +4,7 @@ from typing import Callable, Dict, List, Optional, Any
 
 from app.api.connection_manager import ConnectionManager
 from app.api.game_manager import GameManager, Player, InvalidWordException
+from app.api.scrabble import BoardT
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 
@@ -25,33 +26,30 @@ async def handle_perk_error(callback: Callable[Any, Any], connection_manager, we
         await connection_manager.send_personal_message(json.dumps({"type": "gameError", "message": str(error)}), websocket)
 
 
-def filter_message(data: Dict[str, str]) -> Dict[str, str]:
+def filter_message(data: Dict[str, str], replace: str = "****") -> str:
     """function to filter chat messages"""
     
-    bannedWords = ["shit","fuck","crap","bitch"] # will add more words to this
-    
-    chatMessage = data.get('message')
-    censoredMessageList = []
-    
-    for word in chatMessage.split():
-        if word in bannedWords:
-            censoredMessageList.append("[redacted]")
+    # TODO: make this function get the words from the database
+    banned_words = set(("shit", "fuck", "crap", "bitch"))
+    censored_message: list[str] = []
+
+    for word in data['message'].split():
+        if word in banned_words:
+            censored_message.append(replace)
         else:
-         censoredMessageList.append(word)
-    
-    censoredMessage = " ".join(censoredMessageList)
-    data.update({'message': censoredMessage})
+            censored_message.append(word)
+
+    data['message'] = " ".join(censored_message)
     return json.dumps(data)
 
 
-def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[str, str]:
+def process_next_turn(room_id: str, board: BoardT) -> Dict[str, str]:
     """process the next turn, this function doesn't return anything to the client"""
-    game: GameManager = connection_manager.connected[room_id]
+    game = connection_manager.connected[room_id]
     try:
         game.next_turn(board)
         return game.asdict()
-    except InvalidWordException as error:
-        print(error)
+    except InvalidWordException:
         return {'type': 'updateError', 'message': 'invalid word placed'}
 
 
