@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app import init_db
-from app.api import router
+from characterconnect import init_db
+from characterconnect.api import router
 
 """
 main program entrypoint.

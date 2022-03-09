@@ -6,10 +6,10 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.models.users import User
-from app import schemas
-from app.core.config import config
-from app.api.dependencies import get_database
+from ..models import User
+from .. import schemas
+from ..core.config import config
+from .dependencies import get_database
 
 """
 file holds all of the important methods/ endpoints for validating a user

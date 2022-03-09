@@ -2,10 +2,11 @@ import datetime
 import json
 from typing import Callable, Dict, List, Optional, Any
 
-from app.api.connection_manager import ConnectionManager
-from app.api.game_manager import GameManager, Player, InvalidWordException
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
+
+from .connection_manager import ConnectionManager
+from .game_manager import GameManager, Player, InvalidWordException
 
 
 router = APIRouter()

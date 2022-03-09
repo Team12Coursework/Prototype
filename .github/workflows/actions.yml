@@ -1,0 +1,12 @@
+name: backend_testing
+on: push
+jobs:
+  pytest:
+    name: pytest
+    runs-on: ubuntu-20.04
+    steps:
+      - run: cd backend
+      - run: python -m pip install poetry
+      - run: poetry install
+      - run: pip install .
+      - run: poetry run pytest

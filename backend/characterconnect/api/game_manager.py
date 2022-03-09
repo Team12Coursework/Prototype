@@ -3,7 +3,7 @@ from typing import Dict, List, MutableSet, Tuple, Optional
 import random
 import dataclasses
 
-from app.api.scrabble import find_word, valid_start, construct_empty_board, calculate_points
+from .scrabble import find_word, valid_start, construct_empty_board, calculate_points
 from fastapi import WebSocket
 
 
