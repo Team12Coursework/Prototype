@@ -5,6 +5,8 @@ points: Dict[str, int] = {
     'O': 1, 'P': 4, 'Q': 10, 'R': 1, 'S': 1, 'T': 1, 'U': 2, 'V': 5, 'W': 5, 'X': 10, 'Y': 4, 'Z': 8
 }
 
+BoardT = list[list[str | None]]
+
 def construct_empty_board() -> List[List[Optional[str]]]:
     """construct a 15x15 NumPy array to represent the board"""
     return [[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] for _ in range(15)]
