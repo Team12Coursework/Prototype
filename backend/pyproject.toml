@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "backend"
+name = "characterconnect"
 version = "0.1.0"
 description = "CharacterConnect API code"
 authors = ["Harry Lees <harry.lees@gmail.com>"]
