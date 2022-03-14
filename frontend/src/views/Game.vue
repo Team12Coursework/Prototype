@@ -25,10 +25,22 @@
                             <button @click="resetBoard" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
                             <button @click="nextTurn" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
                         </div>
+
+                        <div class="flex space-x-2 w-full">
+                            <button @click="activatePerk('oneRandomLetter')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
+                            <button @click="activatePerk('twoRandomLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
+                            <button @click="activatePerk('changeLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
+                        </div>
                     </div>
+
+        
+
                 </div>
             </div>
+
+            
         </main>
+        
 </template>
 
 <script>
@@ -60,6 +72,15 @@ export default{
     },
 
     methods: {
+
+
+        activatePerk(perkName){
+            this.socket.send(JSON.stringify({
+                type: "activatePerk",
+                subtype: perkName,
+            }))
+        },
+
         squareId(x, y) {
             return `${(x-1).toString()},${(y-1).toString()}`
         },
