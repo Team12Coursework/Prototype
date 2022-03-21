@@ -31,16 +31,11 @@
                             <button @click="activatePerk('twoRandomLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
                             <button @click="activatePerk('changeLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
                         </div>
+                        <button :class="muted ? 'bg-red-400' : 'bg-blue-400'" @click="muted = !muted">Mute</button>
                     </div>
-
-        
-
                 </div>
             </div>
-
-            
         </main>
-        
 </template>
 
 <script>
@@ -60,6 +55,7 @@ export default{
             gameData: null,
             placed: false,
             localBoard: null,
+            muted: false,
         }
     },
 
@@ -72,8 +68,6 @@ export default{
     },
 
     methods: {
-
-
         activatePerk(perkName){
             this.socket.send(JSON.stringify({
                 type: "activatePerk",
@@ -117,8 +111,6 @@ export default{
                 else
                     return "background-color: rgba(248, 113, 113, 0.3)";
             }
-
-
             return "background: rgba(243, 244, 246, 0.5)";
         },
 
@@ -144,11 +136,15 @@ export default{
         },
 
         sendChatMessage(message) {
-            this.socket.send(JSON.stringify({type: "message", message: message, fromUser: this.user, sentAt: new Date().toLocaleTimeString('en-GB') }));
+            if (!muted) {
+                this.socket.send(JSON.stringify({type: "message", message: message, fromUser: this.user, sentAt: new Date().toLocaleTimeString('en-GB') }));
+            }
         },
 
         receiveChatMessage(message) {
-            this.chatMessages.push(message);
+            if (!muted) {
+                this.chatMessages.push(message);
+            }
         },
     },
 
