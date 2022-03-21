@@ -43,7 +43,7 @@
 
 .bg-main-man{
     background-color: #141414;
-    background-image: url(../assets/bg-go-3.jpg);
+    background-image: url(../assets/images/bg-go-3.jpg);
     background-size: cover;
 }
 
