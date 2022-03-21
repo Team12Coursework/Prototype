@@ -1,35 +1,29 @@
 <template>
     <main class="flex flex-col h-screen">
         <navbar/>
-                <div class="bg-main-man w-full flex flex-grow">
-                <div class="w-full flex justify-around flex-col flex-grow items-center max-w-screen-md mx-auto">
+
+        <div class="bg-main-man w-full flex flex-grow">
+            <div class="w-full flex justify-around flex-col flex-grow items-center max-w-screen-md mx-auto">
                 <div class="space-y-4">
-                <div class="flex justify-center space-x-2 logo-container">
-                    <img class="logo" src="../assets/Character_Connect_Logo.jpg" />
-                    <img class="hand" src="../assets/hand.png" />
-                    <img class="bulb" src="../assets/bulb.png" />
+                    <div class="flex justify-center space-x-2 logo-container">
+                        <img class="logo" src="../assets/images/Character_Connect_Logo.jpg" />
+                        <img class="hand" src="../assets/images/hand.png" />
+                        <img class="bulb" src="../assets/images/bulb.png" />
+                    </div>
                 </div>
-                </div>
+
                 <div class="flex flex-col space-y-4">
-                <router-link class="button bg-blue-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/happy.gif" />NEW GAME</router-link>
-                <router-link class="button bg-green-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/happy.gif" />JOIN GAME</router-link>
-                <router-link class="button bg-red-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/happy.gif" />LEADERBOARD</router-link>
+                    <router-link class="button bg-blue-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/images/happy.gif" />NEW GAME</router-link>
+                    <router-link class="button bg-green-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/images/happy.gif" />JOIN GAME</router-link>
+                    <router-link class="button bg-red-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/images/happy.gif" />LEADERBOARD</router-link>
                 </div>
-                </div>
+            </div>
         </div>
     </main>
 </template>
 
-
-
-<script>
-    import Navbar from "@/components/Navbar.vue"
-
-    export default{
-        components: {
-            Navbar,
-        }
-    }
+<script setup>
+import Navbar from "@/components/Navbar.vue"
 </script>
 
 <style scoped>
@@ -47,7 +41,7 @@
 	z-index: 1;
 }
 .bg-main-man{
-	background: url("../assets/new-menu-clean.png");
+	background: url("../assets/images/new-menu-clean.png");
 	background-size: cover;
 	background-position: bottom;
 }
