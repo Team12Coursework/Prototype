@@ -1,5 +1,6 @@
 <template>
     <navbar/>
+
     <main class="flex justify-center w-full">
         <div class="w-full max-w-7xl flex flex-col space-y-12 items-center">
             <div class="flex flex-col items-center pt-6">
@@ -14,27 +15,22 @@
     </main>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+
 import Navbar from "@/components/Navbar.vue";
 
-export default {
-    components: {
-        Navbar,
-    },
+const link = ref("");
+const router = useRouter()
 
-    setup() {
-        const link = ref("");
-        const getLink = () => {
-            let epoch_time = Date.now();
-            const router = useRouter()
-            link.value = router.resolve({name: 'Play', params: {game_id: epoch_time}});
+onMounted(() => {
+    let epoch_time = Date.now();
+    link.value = router.resolve({
+        name: "Play",
+        params: {
+            game_id: epoch_time
         }
-
-        onMounted(getLink);
-
-        return { link }
-    },
-}
+    });
+});
 </script>
