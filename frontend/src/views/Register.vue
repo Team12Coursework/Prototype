@@ -2,7 +2,7 @@
     <register-page-layout>
         <div class="bg-white h-full border p-5 flex flex-col space-y-4 shadow">
             <div class="mx-auto">
-                <img class="logo-max-width" src='../assets/Character_Connect_Logo.jpg'>
+                <img class="logo-max-width" src='@/assets/images/Character_Connect_Logo.jpg'>
             </div>
             <div class="justify-center flex-grow flex flex-col space-y-4">
                 <h1 class="text-3xl text-gray-800 font-semibold">Register</h1>
@@ -35,17 +35,8 @@
                 <div class="flex-grow"></div>
                 <div class="flex flex-col">
                     <div class="flex justify-around mb-4">
-                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our youtube">
-                        <img class="h-8 w-8" src='../assets/youtube.png'>
-                    </a>
-                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our reddit">
-                        <img class="h-8 w-8" src='../assets/reddit.png'>
-                    </a>
-                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our discord">
-                        <img class="h-8 w-8" src='../assets/discord.png'>
-                    </a>
-                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our instagram">
-                        <img class="h-8 w-8" src='../assets/instagram.png'>
+                    <a v-for="platform in socialMedia" class="transform hover:scale-125 transition duration-200 ease-in-out" title="Go to our youtube">
+                        <img class="h-8 w-8" :src="platform.link">
                     </a>
                 </div>
 
@@ -66,6 +57,13 @@ import { useStore } from "vuex";
 
 import RegisterPageLayout from "@/layouts/RegisterPageLayout.vue";
 
+const socialMedia = [
+    { name: "YouTube", link: require("@/assets/images/instagram.png") },
+    { name: "Discord", link: require("@/assets/images/discord.png") },
+    { name: "Reddit",  link: require("@/assets/images/reddit.png") },
+    { name: "YouTube", link: require("@/assets/images/youtube.png") },
+];
+
 const store = useStore();
 const router = useRouter();
 
@@ -81,6 +79,7 @@ function handleRegister(event) {
 }
 
 </script>
+
 <style scoped>
 .logo-max-width{
     max-width: 120px;
