@@ -67,7 +67,7 @@ const password = ref("");
 
 function handleLogin(event) {
     store.dispatch("auth/login", { username: username.value, password: password.value }).then(
-        () => { router.push({ name: "Lobby" }) },
+        () => { router.push({ name: "MainMenu" }) },
         () => { alert("username or password incorrect") }
     )
     event.preventDefault;
