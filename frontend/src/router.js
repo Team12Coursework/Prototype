@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import MainMenu from '../views/MainMenu.vue'
-import store from '../store/index.js'
+import MainMenu from '@/views/MainMenu.vue'
+import store from '@/store/index.js'
 
 const routes = [
     {
