@@ -1,73 +1,88 @@
 <template>
-    <central-floating-layout>
-        <div class="bg-white rounded border p-5 flex flex-col space-y-4 shadow">
-            <h1 class="text-3xl text-gray-800 font-semibold">Register</h1>
+    <register-page-layout>
+        <div class="bg-white h-full border p-5 flex flex-col space-y-4 shadow">
+            <div class="mx-auto">
+                <img class="logo-max-width" src='../assets/Character_Connect_Logo.jpg'>
+            </div>
+            <div class="justify-center flex-grow flex flex-col space-y-4">
+                <h1 class="text-3xl text-gray-800 font-semibold">Register</h1>
+                <p class="text-xs">Already have an account?<br><a class="underline underline-offset-2 text-blue-400 hover:text-blue-600" href="/login">Log in</a></p>
 
-            <form @submit="handleRegister">
                 <div class="flex flex-col">
-                    <label for="username">USERNAME</label>
-                    <input required v-model="user.username" type="text" name="username" class="rounded border p-2" />
+                    <label class="mb-2" for="username">Username</label>
+                    <input v-model="username" type="text" name="username" class="rounded border p-2" />
                 </div>
 
-                <div class="flex space-x-2">
-                    <div class="flex flex-col">
-                        <label for="password">PASSWORD</label>
-                        <input required v-model="user.password" type="password" name="password" class="rounded border p-2" />
-                    </div>
-
-                    <div class="flex flex-col">
-                        <label for="password">CONFIRM PASSWORD</label>
-                        <input type="password" name="password" class="rounded border p-2" />
-                    </div>
+                <div class="flex flex-col">
+                    <label class="mb-2" for="username">Email</label>
+                    <input type="email" name="username" class="rounded border p-2" />
                 </div>
 
-                <input type="submit" value="Create Account" class="rounded p-2 text-white bg-blue-500" />
-            </form>
+                <div class="flex flex-col">
+                    <label class="mb-2" for="password">Password</label>
+                    <input v-model="password" type="password" name="password" class="rounded border p-2" />
+                </div>
+
+                <div class="flex flex-col">
+                    <label class="mb-2" for="password">Confirm password</label>
+                    <input type="password" name="password" class="rounded border p-2" />
+                </div>
+
+                <button @click="handleRegister" class="cursor-pointer hover:bg-blue-700 rounded p-2 text-white bg-blue-500">Create Account</button>
+            </div>
+
+            <div class="flex flex-col flex-grow">
+                <div class="flex-grow"></div>
+                <div class="flex flex-col">
+                    <div class="flex justify-around mb-4">
+                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our youtube">
+                        <img class="h-8 w-8" src='../assets/youtube.png'>
+                    </a>
+                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our reddit">
+                        <img class="h-8 w-8" src='../assets/reddit.png'>
+                    </a>
+                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our discord">
+                        <img class="h-8 w-8" src='../assets/discord.png'>
+                    </a>
+                    <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our instagram">
+                        <img class="h-8 w-8" src='../assets/instagram.png'>
+                    </a>
+                </div>
+
+                <p class="text-xs text-center flex flex-col">
+                    <a class="underline underline-offset-2 text-blue-400 hover:text-blue-600" href="https://team12coursework.github.io/index.html#rules" target="_blank">Learn more</a>
+                    © 2021 CharacterConnect by Team 12
+                </p>
+                </div>
+            </div>
         </div>
-    </central-floating-layout>
+    </register-page-layout>
 </template>
 
-<script>
-import CentralFloatingLayout from "@/layouts/CentralFloatingLayout.vue";
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
-export default {
-    components: {
-        CentralFloatingLayout,
-    },
+import RegisterPageLayout from "@/layouts/RegisterPageLayout.vue";
 
-    data() {
-        return {
-            user: {
-                username: "",
-                password: "",
-            }
-        }
-    },
+const store = useStore();
+const router = useRouter();
 
-    computed: {
-        loggedIn() {
-            return this.$store.state.auth.status.loggedIn;
-        },
-    },
+const username = ref("");
+const password = ref("");
 
-    mounted() {
-        if (this.loggedIn) {
-            this.$router.push("/");
-        }
-    },
-
-    methods: {
-        handleRegister(e) {
-            e.preventDefault();
-            this.$store.dispatch("auth/register", this.user).then(
-                () => {
-                    this.$router.push("/login");
-                },
-                () => {
-                    alert("something went wrong");
-                },
-            );
-        }
-    }
+function handleRegister(event) {
+    event.preventDefault();
+    store.dispatch("auth/register", {username: username.value, password: password.value}).then(
+        () => { router.push("/login") },
+        () => { alert("Something went wrong") }
+    )
 }
+
 </script>
+<style scoped>
+.logo-max-width{
+    max-width: 120px;
+}
+</style>
