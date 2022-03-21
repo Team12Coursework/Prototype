@@ -2,12 +2,14 @@
     <logging-page-layout>
         <div class="bg-white h-full border p-5 flex flex-col space-y-4 shadow">
             <div class="mx-auto">
-                <img class="logo-max-width" src='../assets/Character_Connect_Logo.jpg'>
+                <img class="logo-max-width" src='../assets/images/Character_Connect_Logo.jpg'>
             </div>
             <div class="justify-center flex-grow flex flex-col space-y-4">
                 <h1 class="text-3xl text-gray-800 font-semibold">Login</h1>
-                {{ username }} {{ password }}
-                <p class="text-xs">Need a CharacterConnect account?<br><a class="underline underline-offset-2 text-blue-400 hover:text-blue-600" href="/register">Create an account</a></p>
+                <p class="text-xs">
+                    Need a CharacterConnect account?<br>
+                    <a class="underline underline-offset-2 text-blue-400 hover:text-blue-600" href="/register">Create an account</a>
+                </p>
 
                 <div class="flex flex-col">
                     <label class="mb-2" for="username">Username</label>
@@ -27,19 +29,19 @@
                 <div class="flex flex-col">
                     <div class="flex justify-around mb-4">
                         <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our youtube">
-                            <img class="h-8 w-8" src='../assets/youtube.png'>
+                            <img class="h-8 w-8" src='../assets/images/youtube.png'>
                         </a>
 
                         <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our reddit">
-                            <img class="h-8 w-8" src='../assets/reddit.png'>
+                            <img class="h-8 w-8" src='../assets/images/reddit.png'>
                         </a>
 
                         <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our discord">
-                            <img class="h-8 w-8" src='../assets/discord.png'>
+                            <img class="h-8 w-8" src='../assets/images/discord.png'>
                         </a>
 
                         <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our instagram">
-                            <img class="h-8 w-8" src='../assets/instagram.png'>
+                            <img class="h-8 w-8" src='../assets/images/instagram.png'>
                         </a>
                     </div>
 
