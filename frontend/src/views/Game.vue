@@ -38,179 +38,167 @@
         </main>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+
 import BoardSquare from '@/components/BoardSquare.vue'
 import Card from '@/components/Card.vue'
 import Navbar from '@/components/Navbar.vue'
 import Chatbox from '@/components/Chatbox.vue'
 import Scoreboard from '@/components/Scoreboard.vue'
 
-export default{
-    name: "Game",
+const store = useStore();
+const route = useRoute();
 
-    data() {
-        return {
-            chatMessages: [],
-            socket: null,
-            gameData: null,
-            placed: false,
-            localBoard: null,
-            muted: false,
-        }
-    },
+const chatMessages = ref([]);
+const gameData = ref(null);
+const placed = ref(false);
 
-    components:{
-        BoardSquare,
-        Card,
-        Navbar,
-        Chatbox,
-        Scoreboard,
-    },
+const localBoard = null;
+let socket = null;
 
-    methods: {
-        activatePerk(perkName){
-            this.socket.send(JSON.stringify({
-                type: "activatePerk",
-                subtype: perkName,
-            }))
-        },
+function activatePerk(perkName){
+    this.socket.send(JSON.stringify({
+        type: "activatePerk",
+        subtype: perkName,
+    }))
+};
 
-        squareId(x, y) {
-            return `${(x-1).toString()},${(y-1).toString()}`
-        },
+function squareId(x, y) {
+    return `${(x-1).toString()},${(y-1).toString()}`
+};
 
-        tileColour(squareId) {
-            const RED_TILES = new Set([ "0,0", "0,7", "7,14", "14,7", "14,14", "0,14", "14,0", "7,0", "7,7"]);
-            const BLUE_TILES = new Set([
-                "11,0", "3,0", "7,3", "8,2", "9,1", "6,2", "5,1", // top side
-                "0,11", "0,3", "3,7", "2,8", "1,9", "2,6", "1,5", // left side
-                "11,14", "3,14", "7,11", "8,12", "9,13", "6,12", "5,13", // bottom side
-                "14,11", "14,3", "11,7", "12,8", "13,9", "12,6", "13,5", // left side
-            ]);
+function tileColour(squareId) {
+    const RED_TILES = new Set([ "0,0", "0,7", "7,14", "14,7", "14,14", "0,14", "14,0", "7,0", "7,7"]);
+    const BLUE_TILES = new Set([
+        "11,0", "3,0", "7,3", "8,2", "9,1", "6,2", "5,1", // top side
+        "0,11", "0,3", "3,7", "2,8", "1,9", "2,6", "1,5", // left side
+        "11,14", "3,14", "7,11", "8,12", "9,13", "6,12", "5,13", // bottom side
+        "14,11", "14,3", "11,7", "12,8", "13,9", "12,6", "13,5", // left side
+    ]);
 
-            // check if square is one of the predefined red tiles
-            if (RED_TILES.has(squareId)) {
-                return "background-color: rgba(248, 113, 113, 1)";
-            }
+    // check if square is one of the predefined red tiles
+    if (RED_TILES.has(squareId)) {
+        return "background-color: rgba(248, 113, 113, 1)";
+    }
 
-            // check if square is one of the squares surrounding the red tiles
-            // on the edge of the board.
-            if (BLUE_TILES.has(squareId)) {
-                return "background-color: rgba(96, 165, 250, 0.3)";
-            }
+    // check if square is one of the squares surrounding the red tiles
+    // on the edge of the board.
+    if (BLUE_TILES.has(squareId)) {
+        return "background-color: rgba(96, 165, 250, 0.3)";
+    }
 
-            let idx = squareId.split(",");
-            let x = parseInt(idx[0]);
-            let y = parseInt(idx[1]);
+    let idx = squareId.split(",");
+    let x = parseInt(idx[0]);
+    let y = parseInt(idx[1]);
 
-            // check if square is on the diagonal
-            if (x === y || x === 14 - y) {
-                // check if diagonals are within 3 tiles of the center
-                if (Math.abs(x-7) < 3 && Math.abs(y-7) < 3)
-                    return "background-color: rgba(96, 165, 250, 0.3)";
-                else
-                    return "background-color: rgba(248, 113, 113, 0.3)";
-            }
-            return "background: rgba(243, 244, 246, 0.5)";
-        },
+    // check if square is on the diagonal
+    if (x === y || x === 14 - y) {
+        // check if diagonals are within 3 tiles of the center
+        if (Math.abs(x-7) < 3 && Math.abs(y-7) < 3)
+            return "background-color: rgba(96, 165, 250, 0.3)";
+        else
+            return "background-color: rgba(248, 113, 113, 0.3)";
+    }
+    return "background: rgba(243, 244, 246, 0.5)";
+};
 
-        resetBoard() {
-            this.$store.commit("board/updateBoard", JSON.parse(JSON.stringify(this.gameData.board)));
-        },
+function resetBoard() {
+    store.commit("board/updateBoard", JSON.parse(JSON.stringify(gameData.value.board)));
+};
 
-        updateError(data) {
-            alert(data.message);
-            this.resetBoard();
-        },
+function updateError(data) {
+    alert(data.message);
+    this.resetBoard();
+};
 
-        updateGame(data) {
-            this.gameData = data;
-            this.resetBoard();
-        },
+function updateGame(data) {
+    gameData.value = data;
+    resetBoard();
+};
 
-        nextTurn() {
-            this.socket.send(JSON.stringify({
-                type: "gameUpdate",
-                board: this.$store.state.board.board,
-            }))
-        },
+function nextTurn() {
+    socket.send(JSON.stringify({
+        type: "gameUpdate",
+        board: store.state.board.board,
+    }))
+};
 
-        sendChatMessage(message) {
-            if (!muted) {
-                this.socket.send(JSON.stringify({type: "message", message: message, fromUser: this.user, sentAt: new Date().toLocaleTimeString('en-GB') }));
-            }
-        },
+function sendChatMessage(message) {
+    socket.send(JSON.stringify({
+        type: "message",
+        message: message,
+        fromUser: user.value,
+        sentAt: new Date().toLocaleTimeString('en-GB')
+    }));
+};
 
-        receiveChatMessage(message) {
-            if (!muted) {
-                this.chatMessages.push(message);
-            }
-        },
-    },
+function receiveChatMessage(message) {
+    this.chatMessages.push(message);
+};
 
-    computed: {
-        storeData() {
-            return this.$store.state.board;
-        },
+function handleMessage(event) {
+    let data = JSON.parse(event.data);
+    switch(data.type) {
+        case "gameUpdate":
+            this.updateGame(data);
+            break;
+        case "message":
+            this.receiveChatMessage(data);
+            break;
+        case "updateError":
+            this.updateError(data);
+            break;
+    }
+};
 
-        tiles() {
-            if (this.gameData === null)
-                return [];
+const storeData = computed(() => { return store.state.board });
 
-            for (let player of this.gameData.players)
-                if (player.name == this.user)
-                    return player.tiles;
-            return [];
-        },
+const tiles = computed(() => {
+    if (gameData.value === null)
+        return [];
 
-        players() {
-            if (this.gameData == null)
-                return [];
-            return this.gameData.players;
-        },
+    for (let player of gameData.value.players)
+        if (player.name == this.user)
+            return player.tiles;
+    return [];
+});
 
-        piecePlaced() {
-            return this.$store.state.board.placed;
-        },
+const players = computed(() => {
+    if (gameData.value === null)
+        return [];
+    return gameData.value.players;
+});
 
-        user() {
-            // function to decode the JWT token given to the client at login.
-            // this function will decode the JWT and extract the username which will be used to play the game.
+const piecePlaced = computed(() => {
+    return store.state.board.placed;
+});
 
-            var base64Url = this.$store.state.auth.user.accessToken.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
+const user = computed(() => {
+    // function to decode the JWT token given to the client at login.
+    // this function will decode the JWT and extract the username which will be used to play the game.
 
-            return JSON.parse(jsonPayload).sub;
-        },
-    },
+    var base64Url = this.$store.state.auth.user.accessToken.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
 
-    mounted() {
-        this.socket = new WebSocket(`ws://localhost:8000/api/game/ws/${this.$route.params.game_id}`);
+    return JSON.parse(jsonPayload).sub;
+});
 
-        this.socket.addEventListener("open", () => {
-            this.socket.send(JSON.stringify({
-                type: "playerJoin",
-                player: this.user,
-            }))
-        })
+onMounted(() => {
+    socket = new WebSocket(`ws://localhost:8000/api/game/ws/${route.params.game_id}`);
 
-        this.socket.addEventListener("message", (event) => {
-            let data = JSON.parse(event.data);
-            switch(data.type) {
-                case "gameUpdate":
-                    this.updateGame(data);
-                    break;
-                case "message":
-                    this.receiveChatMessage(data);
-                    break;
-                case "updateError":
-                    this.updateError(data);
-                    break;
-            }
-        })
-    },
-}
+    socket.addEventListener("open", () => {
+        this.socket.send(JSON.stringify({
+            type: "playerJoin",
+            player: user,
+        }))
+    })
+
+    socket.addEventListener("message", handleMessage);
+})
 </script>
