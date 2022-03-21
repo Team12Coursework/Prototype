@@ -1,6 +1,7 @@
 <template>
     <main class="flex flex-col h-screen">
         <navbar/>
+
         <div class="bg-main-man w-full flex flex-grow">
             <div class="w-full flex justify-around flex-col flex-grow items-center max-w-screen-md mx-auto">
             <div class="space-y-4">
