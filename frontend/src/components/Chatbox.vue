@@ -33,9 +33,9 @@ export default {
     methods: {
         colourMessage(message) {
             if (message.fromUser == this.user) {
-                return "text-red-900"
+                return "text-black text pl-3 pt-1.5 rounded-full w-3/4 h-12 italic bg-blue-200"
             } else {
-                return "text-red-800"
+                return "text-black text pl-3 pt-1.5 rounded-full w-3/4 h-12 italic bg-red-400"
             }
 
         },
