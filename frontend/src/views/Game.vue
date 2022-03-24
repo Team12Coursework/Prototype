@@ -1,7 +1,8 @@
 <template>
         <navbar />
 
-        <main class="w-full flex flex-col items-center min-h-screen h-screen p-6 space-y-4 bg-gray-100">
+        <main class="w-full flex flex-col items-center min-h-screen p-6 space-y-4 bg-red-300 bg-cover">
+            <div class="w-full flex flex-col items-center min-h-screen p-6 space-y-4 bg-contain" :style="{'background-image': 'url(' + backgroundImage(this.$store.getters.getGameNum) + ')'}">
             <div class="max-w-screen-2xl space-y-4 w-full flex flex-col">
                 <scoreboard v-if="players.length === 2" :players="players" />
 
@@ -16,6 +17,22 @@
                         <div class="w-full p-2 bg-green-600 shadow-inner rounded h-24 flex space-x-2">
                             <card v-for="(tile, i) in tiles" :key="tile" :letter="tile" :id="i" :draggable="true"/>
                         </div>
+
+                        <div class="border-4 mt-3 w-full">
+                            <div class="border-2 m-2 float-left p-4 text-center">
+                                <button class="text-center p-2"><img class="w-32" src="../assets/img/powerup_ideas.jpg"></button>
+                                <p>Free Letter</p>
+                            </div>
+                             <div class="border-2 m-2 float-left p-4 text-center">
+                                <button class="text-center p-2"><img class="w-32" src="../assets/img/powerup_ideas_2.jpg"></button>
+                                <p>Two Random Letters</p>
+                            </div>
+                             <div class="border-2 m-2 float-left p-4 text-center">
+                                <button class="text-center p-2"><img class="w-32" src="../assets/img/powerup_ideas_3.jpg"></button>
+                                <p>Change Bag</p>
+                            </div>
+                        </div> 
+
                     </div>
 
                     <div class="w-1/2 flex flex-col">
@@ -24,6 +41,7 @@
                         <div v-if="piecePlaced" class="flex space-x-2 w-full">
                             <button @click="resetBoard" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
                             <button @click="nextTurn" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -60,6 +78,19 @@ export default{
     },
 
     methods: {
+        backgroundImage(number) {
+      let num = number;
+      if (num == 1) {
+        return require("../assets/img/maths_page.jpg");
+      }
+      else if (num == 2) {
+        return require("../assets/img/science_page.jpg");
+      }
+      else if (num == 3) {
+        return require("../assets/img/custom_page.jpg");
+      } 
+    },
+
         squareId(x, y) {
             return `${(x-1).toString()},${(y-1).toString()}`
         },

@@ -4,7 +4,7 @@
             <div class="relative flex items-center justify-between h-14">
 
                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center font-bold text-lg text-gray-800"><router-link to="/">Character Connect</router-link></div>
+                    <div class="flex-shrink-0 flex items-center font-bold text-lg text-gray-800"><router-link @click="$store.commit('reset')" to="/">Character Connect</router-link></div>
                 </div>
 
                 <div class="flex items-center space-x-2 text-xs">
