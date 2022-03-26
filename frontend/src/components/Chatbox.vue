@@ -1,16 +1,20 @@
 <template>
     <!-- Chatbox component used for the Chat functionality in the game screen -->
 
+    <button class= " rounded-full m-1 font-bold w-36 h-10 border-black border-solid  outline-black"  @click="toggleMuted" :class="buttonColour()">MUTE CHAT</button>
     <form @submit="sendMessage" class="add-form">
-        <div class="border p-2 rounded flex flex-col justify-between h-96 w-90/100">
+           <div class=" bg-gray-300 border-solid border-2 rounded flex flex-col justify-between h-96 w-90/100 border-black">
+           <div class =" p-3 text-2xl font-bold text-center text h-1/6 w-auto bg-indigo-500 "> <p> Chat Box </p>  </div> 
+            <div class="border p-2 rounded flex flex-col justify-between h-96 w-90/100"> </div>
             <div class="flex flex-col">
-                <p v-for="message in messages" :key="message">
+                 <p class="border rounded p-2 border-black w-3/4 self-end  mt-20"  v-for="message in messages" :key="message">
+
                     [{{ message.sentAt }}]:
                     <span v-if="message.type === 'playerJoin'" class="italic text-gray-600">{{ message.player.name }} joined the room</span>
                     <span v-if="message.type === 'message'">({{ message.fromUser }}) {{ message.message }}</span>
                 </p>
             </div>
-            <input class="border rounded p-2" type="text" v-model="text" placeholder="Your message here..." />
+            <input class=" mb-2 self-center w-10/12 border rounded p-2 bg-gray-200  " type="text" v-model="text" placeholder="Please type in your message here...." />
         </div>
     </form>
 </template>
@@ -25,6 +29,7 @@ export default {
     data() {
         return {
             text: "",
+            muted: false
         }
     },
 
@@ -39,6 +44,12 @@ export default {
 
             this.$emit("update:messages", this.text);
             this.text = ""; // reset the textbox back to an empty string
+        },
+         toggleMuted(){
+            this.muted = !this.muted;
+        },
+        buttonColour(){
+            return this.muted ? "bg-red-600" : "bg-lime-400";
         },
     },
 
