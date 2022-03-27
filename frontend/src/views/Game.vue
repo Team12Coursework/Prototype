@@ -27,9 +27,9 @@
                         </div>
 
                         <div class="flex space-x-2 w-full">
-                            <button @click="activatePerk('oneRandomLetter')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
-                            <button @click="activatePerk('twoRandomLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
-                            <button @click="activatePerk('changeLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
+                            <button @click="activatePerk('oneRandomLetter')" onclick="PlaySound()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
+                            <button @click="activatePerk('twoRandomLetters')" onclick="PlaySound()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
+                            <button @click="activatePerk('changeLetters')" onclick="PlaySound()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
                         </div>
                         <button :class="muted ? 'bg-red-400' : 'bg-blue-400'" @click="muted = !muted">Mute</button>
                     </div>
@@ -60,6 +60,22 @@ const placed = ref(false);
 
 const localBoard = null;
 let socket = null;
+
+const perkSound = new Audio("../assets/power_up.wav");
+function PlaySound() {
+  perkSound.play();
+}
+
+const nextTurn = new Audio("../assets/power_up.wav");
+function PlaySound() {
+  nextTurn.play();
+}
+
+const resetWord = new Audio("../assets/power_up.wav");
+function PlaySound() {
+  resetWord.play();
+}
+
 
 function activatePerk(perkName){
     socket.send(JSON.stringify({
