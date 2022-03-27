@@ -22,14 +22,14 @@
                         <chatbox :messages="chatMessages" @update:messages="sendChatMessage($event)" />
 
                         <div v-if="piecePlaced" class="flex space-x-2 w-full">
-                            <button @click="resetBoard" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
-                            <button @click="nextTurn" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
+                            <button @click="resetBoard" onclick="PlayRW()" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
+                            <button @click="nextTurn" onclick="PlayNTS()" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
                         </div>
 
                         <div class="flex space-x-2 w-full">
-                            <button @click="activatePerk('oneRandomLetter')" onclick="PlaySound()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
-                            <button @click="activatePerk('twoRandomLetters')" onclick="PlaySound()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
-                            <button @click="activatePerk('changeLetters')" onclick="PlaySound()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
+                            <button @click="activatePerk('oneRandomLetter')" onclick="PlayPS()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
+                            <button @click="activatePerk('twoRandomLetters')" onclick="PlayPS()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
+                            <button @click="activatePerk('changeLetters')" onclick="PlayPS()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
                         </div>
                         <button :class="muted ? 'bg-red-400' : 'bg-blue-400'" @click="muted = !muted">Mute</button>
                     </div>
@@ -61,18 +61,18 @@ const placed = ref(false);
 const localBoard = null;
 let socket = null;
 
-const perkSound = new Audio("../assets/power_up.wav");
-function PlaySound() {
+const perkSound = new Audio("../assets/music/power_up.wav");
+function PlayPS() {
   perkSound.play();
 }
 
-const nextTurn = new Audio("../assets/power_up.wav");
-function PlaySound() {
-  nextTurn.play();
+const nextTurnSound = new Audio("../assets/music/power_up.wav");
+function PlayNTS() {
+  nextTurnSound.play();
 }
 
-const resetWord = new Audio("../assets/power_up.wav");
-function PlaySound() {
+const resetWord = new Audio("../assets//music/reset_word.wav");
+function PlayRW() {
   resetWord.play();
 }
 
