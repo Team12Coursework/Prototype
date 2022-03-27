@@ -71,11 +71,11 @@ const username = ref("");
 const password = ref("");
 
 function handleRegister(event) {
-    event.preventDefault();
     store.dispatch("auth/register", {username: username.value, password: password.value}).then(
         () => { router.push("/login") },
         () => { alert("Something went wrong") }
     )
+    event.preventDefault();
 }
 
 </script>
