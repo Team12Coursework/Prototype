@@ -42,6 +42,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import { baseWebSocketURL } from "@/constants.js";
 
 import BoardSquare from '@/components/BoardSquare.vue'
 import Card from '@/components/Card.vue'
@@ -190,7 +191,7 @@ const user = computed(() => {
 });
 
 onMounted(() => {
-    socket = new WebSocket(`ws://localhost:8000/api/game/ws/${route.params.game_id}`);
+    socket = new WebSocket(`${baseWebSocketURL}/api/game/ws/${route.params.game_id}`);
 
     socket.addEventListener("open", () => {
         this.socket.send(JSON.stringify({
