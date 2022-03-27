@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from time import sleep
 
 from characterconnect import init_db
 from characterconnect.api import router
@@ -29,4 +30,8 @@ app.include_router(
     prefix='/api'
 )
 
+# there must be a better way of doing this :D. Just wait for
+# 5 seconds before starting the database to ensure PostgreSQL
+# can startup properly in the other Docker container.
+sleep(5)
 init_db.init()
