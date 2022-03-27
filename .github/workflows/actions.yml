@@ -7,8 +7,8 @@ jobs:
     name: pytest
     runs-on: ubuntu-20.04
     defaults:
-      run: ls -la
-        # working-directory: backend
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v3
       - run: python -m pip install poetry
