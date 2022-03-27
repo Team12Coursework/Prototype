@@ -72,7 +72,7 @@ function handleLogin(event) {
         () => { router.push({ name: "MainMenu" }) },
         () => { alert("username or password incorrect") }
     )
-    event.preventDefault;
+    event.preventDefault();
 }
 </script>
 
