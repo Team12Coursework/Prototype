@@ -1,13 +1,23 @@
-FROM python:3.9
+FROM python:3.10
 
-WORKDIR /code
+WORKDIR /app
 
-COPY ./requirements.txt /code/requirements.txt
+# prevent Python from creating .pyc files, makes Dockerfile smaller
+ENV PYTHONDONTWRITEBYTECODE TRUE
+# prevent Python from buffering print statements, this is required to
+# see logs in Docker
+ENV PYTHONUNBUFFERED TRUE
 
-# install all of the project dependencies
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+ADD pyproject.toml .
 
-COPY . /code/
+# install poetry, don't use PIP to ensure that poetry deps are separated from python deps
+# I believe this will end up creating a small image although I haven't tested it.
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+ENV PATH="${PATH}:/root/.poetry/bin"
 
-# run the backend application through uvicorn, accepting any hosts
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# install dependencies with poetry
+# disable creating venv as Docker is already a clean state
+RUN poetry config virtualenvs.create false
+RUN poetry install
+
+COPY . .
