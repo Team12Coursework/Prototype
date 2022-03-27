@@ -8,21 +8,20 @@ class AuthService {
         params.append('password', user.password);
 
         const config = {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
 
-        return axios.post(`${baseURL}/api/user/login`, params, config)
-        .then(response => {
-            if (response.data.access_token) {
-                localStorage.setItem('user', JSON.stringify({
-                    username: user.name,
-                    accessToken: response.data.access_token
-                }));
-                return response.data;
+        return axios.post(`${baseURL}/api/user/login`, params, config).then(
+            response => {
+                if (response.data.access_token) {
+                    localStorage.setItem('user', JSON.stringify({
+                        username: user.name,
+                        accessToken: response.data.access_token
+                    }));
+                    return response.data;
+                }
             }
-        });
+        );
     }
 
     logout() {
