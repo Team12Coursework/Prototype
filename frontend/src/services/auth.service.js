@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { baseURL } from "@/constants.js";
 
 class AuthService {
     login(user) {
@@ -12,7 +13,7 @@ class AuthService {
             }
         }
 
-        return axios.post('http://localhost:8000/api/user/login', params, config)
+        return axios.post(`${baseURL}/api/user/login`, params, config)
         .then(response => {
             if (response.data.access_token) {
                 localStorage.setItem('user', JSON.stringify({
@@ -29,7 +30,7 @@ class AuthService {
     }
 
     register(user) {
-        return axios.put('http://localhost:8000/api/user/register', {
+        return axios.put(`${baseURL}/api/user/register`, {
             username: user.username,
             password: user.password,
         });
