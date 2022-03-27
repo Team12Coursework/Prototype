@@ -43,7 +43,7 @@ def test_cases(empty_board: BoardT) -> TestCaseT:
 def test_start_word_valid(test_cases: TestCaseT) -> None:
     """test that a valid start word registers as valid"""
     assert scrabble.valid_start(
-        test_cases['start_word_valid']) == True
+        test_cases['start_word_valid'])
 
 def test_find_valid_start_word(test_cases: TestCaseT) -> None:
     """test that the scrabble algorithm can correctly identify the valid
