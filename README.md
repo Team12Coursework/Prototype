@@ -1,10 +1,12 @@
 <h1 align="center">
+    <image src=".github/Character_Connect_Logo.jpg" width=500>
+    <br>
     Character Connect
 </h1>
 
-<h2 align="center">
+<p align="center">
     Team 12 CS2TP Coursework
-</h2>
+</p>
 
 # Running the project
 
