@@ -11,6 +11,15 @@
                         <img class="bulb" src="../assets/images/bulb.png" />
                     </div>
                 </div>
+              
+                <div id="app">
+                  <button @click()="playM">play music</button>
+
+                </div>
+
+                <div v-if="musicPlays">
+                  <p>music should be playing!</p>
+                </div>
 
                 <div class="flex flex-col space-y-4">
                     <router-link class="button bg-blue-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/images/happy.gif" />NEW GAME</router-link>
@@ -24,6 +33,33 @@
 
 <script setup>
 import Navbar from "@/components/Navbar.vue"
+import sound from "../assets/music_4.mp3"
+
+//const audioSource = new Audio("../assets/music_4.mp3");
+//const audioSource = new (sound);
+//audioSource.play();
+
+export default {
+  components: {
+    Navbar,
+    Leaderboard,
+  },
+
+  data() {
+    return {
+      musicPlays: false
+    }
+  },
+
+  methods: {
+    mp() {
+      const audioSource = new Audio(sound)
+      audioSource.crossOrigin = 'anonymous';
+      audioSource.play();
+      this.musicPlays = true;
+    }
+  }
+}
 </script>
 
 <style scoped>
