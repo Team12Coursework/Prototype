@@ -27,9 +27,9 @@
                         </div>
 
                         <div class="flex space-x-2 w-full">
-                            <button @click="activatePerk('oneRandomLetter')" onclick="PlayPS()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
-                            <button @click="activatePerk('twoRandomLetters')" onclick="PlayPS()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
-                            <button @click="activatePerk('changeLetters')" onclick="PlayPS()" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
+                            <button @click="activatePerk('oneRandomLetter')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
+                            <button @click="activatePerk('twoRandomLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
+                            <button @click="activatePerk('changeLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
                         </div>
                         <button :class="muted ? 'bg-red-400' : 'bg-blue-400'" @click="muted = !muted">Mute</button>
                     </div>
@@ -61,21 +61,8 @@ const placed = ref(false);
 const localBoard = null;
 let socket = null;
 
-const perkSound = new Audio("../assets/music/power_up.wav");
-function PlayPS() {
-  perkSound.play();
-}
-
-const nextTurnSound = new Audio("../assets/music/power_up.wav");
-function PlayNTS() {
-  nextTurnSound.play();
-}
-
-const resetWord = new Audio("../assets//music/reset_word.wav");
-function PlayRW() {
-  resetWord.play();
-}
-
+import power_up from "@/assets/music/power up.wav"
+const perkSound = new Audio(power_up)
 
 function activatePerk(perkName){
     socket.send(JSON.stringify({
@@ -123,8 +110,13 @@ function tileColour(squareId) {
     return "background: rgba(243, 244, 246, 0.5)";
 };
 
+
+import reset_word from "@/assets/music/reset_word.wav"
+const resetWord = new Audio(reset_word)
+
 function resetBoard() {
     console.log(gameData.value.board);
+    resetWord.play();
     store.commit("board/updateBoard", JSON.parse(JSON.stringify(gameData.value.board)));
 };
 
@@ -141,7 +133,11 @@ function updateGame(data) {
     resetBoard();
 };
 
+import next_turn from "@/assets/music/next_turn.wav"
+const nextTurnSound = new Audio(next_turn)
+
 function nextTurn() {
+  nextTurnSound.play();
     socket.send(JSON.stringify({
         type: "gameUpdate",
         board: store.state.board.board,
