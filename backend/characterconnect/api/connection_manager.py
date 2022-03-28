@@ -1,5 +1,4 @@
 import json
-from typing import Dict
 
 from fastapi import WebSocket
 
@@ -14,7 +13,7 @@ class RoomFull(Exception):
 class ConnectionManager:
     """ConnectionManager class used to handle active WebSocket connections"""
     def __init__(self) -> None:
-        self.connected: Dict[str, GameManager] = {}
+        self.connected: dict[str, GameManager] = {}
 
     async def join_game(self, room_id: str, player: schemas.Player) -> None:
         """method to create a room on player join game"""
