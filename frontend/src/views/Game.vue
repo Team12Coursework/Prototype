@@ -41,7 +41,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { baseWebSocketURL } from "@/constants.js";
 
 import BoardSquare from '@/components/BoardSquare.vue'
@@ -52,6 +52,7 @@ import Scoreboard from '@/components/Scoreboard.vue'
 
 const store = useStore();
 const route = useRoute();
+const router = useRouter();
 
 const chatMessages = ref([]);
 const gameData = ref(null);
