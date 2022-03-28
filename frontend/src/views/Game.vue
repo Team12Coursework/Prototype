@@ -19,16 +19,16 @@
 
                         <div class="border-4 mt-3 w-full">
                             <div class="border-2 m-2 float-left p-4 text-center">
-                                <button class="text-center p-2"><img class="w-32" src="../assets/img/powerup_ideas.jpg"></button>
-                                <p>Free Letter</p>
+                                <button class="text-center p-2"><img class="w-32" src="../assets/img/one_tile.jpg"></button>
+                                <p class="font-bold">One Random Letter (2 Points)</p>
                             </div>
                              <div class="border-2 m-2 float-left p-4 text-center">
-                                <button class="text-center p-2"><img class="w-32" src="../assets/img/powerup_ideas_2.jpg"></button>
-                                <p>Two Random Letters</p>
+                                <button class="text-center p-2"><img class="w-32" src="../assets/img/change_bag.jpg"></button>
+                                <p class="font-bold">Change Bag (3 Points)</p>
                             </div>
                              <div class="border-2 m-2 float-left p-4 text-center">
-                                <button class="text-center p-2"><img class="w-32" src="../assets/img/powerup_ideas_3.jpg"></button>
-                                <p>Change Bag</p>
+                                <button class="text-center p-2"><img class="w-32" src="../assets/img/two_tiles.jpg"></button>
+                                <p class="font-bold">Two Random Letters (4 Points)</p>
                             </div>
                         </div> 
 
