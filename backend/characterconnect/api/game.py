@@ -2,11 +2,16 @@ import datetime
 import json
 from typing import Callable, Dict, List, Optional, Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
+from jose import jwt
+from ..core.config import config
+from dependencies import get_database
 
 from .connection_manager import ConnectionManager
 from .game_manager import GameManager, Player, InvalidWordException
+from users import denylist
+from ..models import User
 
 
 router = APIRouter()
@@ -15,6 +20,28 @@ connection_manager = ConnectionManager()
 
 """file holds all of the routes for the game behaviour."""
 
+def valid_token(database, token:str) -> bool:
+    # Checks to see if the JWT token is valid
+    # Multiple ways a token could be invalid:
+    # if token isn't actually a JWT Token
+    # If it doesn't contain valid data
+    # If it has expired
+    # If it is from a user who doesn't actually exist in our database
+    # If the token is not in the deny list
+    # If a token isn't actually valid, this function will return an error
+    token = jwt.decode(token, config.SECRET_KEY, algorithms=[config.ALGORITHM])
+    if token("exp") < datetime.now():
+        return False
+    # Database query to find username
+    # database = get_database()
+    # (database=Depends(get_database)
+    user = database.query(User).where(User.name == token("name")).first()
+    if not user:
+        return False
+    if token in denylist:
+        return False    
+    
+        return true
 
 def current_time() -> str:
     return datetime.datetime.now().strftime('%H:%M:%S')
@@ -56,8 +83,13 @@ def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[st
         return {'type': 'updateError', 'message': 'invalid word placed'}
 
 
-async def process_room_join(websocket, decoded, room_id: str) -> None:
+async def process_room_join(websocket, decoded, room_id:  str, database=Depends(get_database)  ) -> None:
     """function to process a player joining the room"""
+    if not valid_token (decoded.data("token")):
+        
+        await decoded.socket.closed()                           
+        return
+        
     name = decoded['player']
     player = Player(name, websocket)
 
@@ -71,7 +103,7 @@ async def process_room_join(websocket, decoded, room_id: str) -> None:
     await connection_manager.broadcast(room_id, json.dumps(game.asdict()))
 
 
-@router.websocket("/ws/{room}")
+@router.websocket("/wss/{room}")
 async def websocket_endpoint(websocket: WebSocket, room: str):
     """method to handle WebSocket events from frontend"""
     await websocket.accept()

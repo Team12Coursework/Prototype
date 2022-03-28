@@ -196,6 +196,9 @@ onMounted(() => {
         this.socket.send(JSON.stringify({
             type: "playerJoin",
             player: user,
+             token: this.$store.state.auth.user.accessToken,
+            // token: localStorage.getItem("user").accessToken
+
         }))
     })
 
