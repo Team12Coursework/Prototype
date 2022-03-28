@@ -4,16 +4,20 @@ export const game = {
         gameNum: 0
     },
     mutations: {
-        toMaths(state) {
+        toGeneral(state) {
              state.gameNum = 1   
         },
 
-        toScience(state) {
+        toMaths(state) {
             state.gameNum = 2
         },
 
-        toCustom(state) {
+        toScience(state) {
             state.gameNum = 3
+        },
+
+        toCustom(state) {
+            state.gameNum = 4
         },
 
         reset(state) {

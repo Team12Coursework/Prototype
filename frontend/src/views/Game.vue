@@ -1,8 +1,7 @@
 <template>
         <navbar />
 
-        <main class="w-full flex flex-col items-center min-h-screen p-6 space-y-4 bg-red-300 bg-cover">
-            <div class="w-full flex flex-col items-center min-h-screen p-6 space-y-4 bg-contain" :style="{'background-image': 'url(' + backgroundImage(this.$store.getters.getGameNum) + ')'}">
+        <main class="w-full flex flex-col items-center min-h-screen p-6 space-y-4 bg-cover" :style="{'background-image': 'url(' + backgroundImage(this.$store.getters.getGameNum) + ')'}">
             <div class="max-w-screen-2xl space-y-4 w-full flex flex-col">
                 <scoreboard v-if="players.length === 2" :players="players" />
 
@@ -14,7 +13,7 @@
                             </div>
                         </div>
 
-                        <div class="w-full p-2 bg-green-600 shadow-inner rounded h-24 flex space-x-2">
+                        <div class="w-full p-2 bg-blue-200 shadow-inner rounded h-24 flex space-x-2">
                             <card v-for="(tile, i) in tiles" :key="tile" :letter="tile" :id="i" :draggable="true"/>
                         </div>
 
@@ -44,7 +43,6 @@
                         </div>
                         </div>
                     </div>
-                </div>
             </div>
         </main>
 </template>
@@ -81,14 +79,17 @@ export default{
         backgroundImage(number) {
       let num = number;
       if (num == 1) {
-        return require("../assets/img/maths_page.jpg");
+        return require("../assets/img/general_page.jpg");
       }
       else if (num == 2) {
-        return require("../assets/img/science_page.jpg");
+        return require("../assets/img/maths_page.jpg");
       }
       else if (num == 3) {
-        return require("../assets/img/custom_page.jpg");
+        return require("../assets/img/science_page.jpg");
       } 
+      else if (num == 4) {
+          return require("../assets/img/custom_page.jpg");
+      }
     },
 
         squareId(x, y) {

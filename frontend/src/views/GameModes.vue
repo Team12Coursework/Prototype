@@ -5,7 +5,7 @@
             <h1 class="text-6xl font-bold">Select A Game Mode</h1>
 
             <div class="w-1/2 max-w-xl flex flex-col items-center space-y-2 mt-4">
-                 <router-link class="button"  to="/lobby">General</router-link>
+                 <router-link class="button" @click="$store.commit('toGeneral')" to="/lobby">General</router-link>
                 <router-link class="button" @click="$store.commit('toMaths')" to="/lobby">Mathematics</router-link>
                 <router-link class="button"  @click="$store.commit('toScience')" to="/lobby">Science</router-link>
                 <router-link class="button" @click="$store.commit('toCustom')" to="/lobby">Custom</router-link>
