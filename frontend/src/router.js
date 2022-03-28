@@ -45,6 +45,11 @@ const routes = [
         component: () => import("@/views/GameOver.vue"),
     },
     {
+        path: "/logout",
+        name: "Logout",
+        component: () => import("@/components/Logout.vue"),
+    },
+    {
         path: '/:catchAll(.*)', // catch-all route used to display a 404 page to any invalid pages
         component: () => import("@/views/404NotFound.vue"),
     },
