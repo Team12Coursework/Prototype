@@ -28,9 +28,13 @@ class ConnectionManager:
         })
         await self.broadcast(room, msg)
 
-    async def disconnect(self, room: str) -> None:
+    async def disconnect(self, room: str, socket: WebSocket) -> None:
         """method to remove player from connections"""
-        pass
+        _room = self.connected[room]
+        for i, player in enumerate(_room.players):
+            if player.socket == socket:
+                _room.forfeit(i)
+                break
 
     async def send_personal_message(self, message: str, websocket: WebSocket) -> None:
         """method to send a message to a specific connection"""
