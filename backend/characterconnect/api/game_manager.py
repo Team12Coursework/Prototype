@@ -47,43 +47,6 @@ class Player:
         return {'name': self.name, 'points': self.points, 'tiles': self.tiles}
 
 
-class TileManager:
-    """tile manager class will manage the deck of tiles for the game to draw upon"""
-    def __init__(self) -> TileManager:
-        # dictionary holding the tile and the number of times the tile occurs
-        self.tiles: Dict[str, int] = {
-            'E': 12, 'A': 9, 'I': 9, 'O': 8, 'N': 6, 'R': 6,
-            'T': 6, 'L': 4,  'S': 4, 'U': 4, 'D': 4, 'G': 3,
-            'B': 2, 'C': 2,  'M': 2, 'P': 2, 'F': 2, 'H': 2,
-            'V': 2, 'W': 2,  'Y': 2, 'K': 1, 'J': 1, 'X': 1,
-            'Q': 1, 'Z': 1,
-        }
-        self.remaining_tiles: List[str] = list(self.tiles.keys())
-
-    def draw(self, n: int) -> List[str]:
-        """draw n tiles from the available tileset"""
-        if len(self.remaining_tiles) < n:
-            raise IndexError(f'cannot remove {n} tiles from tileset, only {len(self.remaining_tiles)} tiles remaining')
-        letters: List[str] = []
-        for _ in range(n):
-            letter: str = random.choice(self.remaining_tiles)
-            if self.tiles[letter] >= 1:
-                self.tiles[letter] -= 1
-            else:
-                self.remaining_tiles.remove(letter)
-            letters.append(letter)
-        return letters
-
-    def draw_remaining(self) -> List[str]:
-        """draws the remaining tiles from the deck"""
-        letters: List[str] = []
-        for letter, num_remaining in self.tiles.items():
-            if num_remaining == 0:
-                continue
-            letters.append([letter] * num_remaining)
-        return letters
-
-
 class GameManager:
     """GameManager class takes care of all general game functions.
     The asdict function represents the entire game state, and should be sent to the client on every update"""
