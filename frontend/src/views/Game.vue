@@ -19,7 +19,7 @@
                     </div>
 
                     <div class="w-1/2 flex flex-col">
-                        <chatbox :messages="chatMessages" @update:messages="this.sendChatMessage($event)" />
+                        <chatbox :messages="chatMessages" @update:messages="sendChatMessage($event)" />
 
                         <div v-if="piecePlaced" class="flex space-x-2 w-full">
                             <button @click="resetBoard" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
@@ -61,7 +61,7 @@ const localBoard = null;
 let socket = null;
 
 function activatePerk(perkName){
-    this.socket.send(JSON.stringify({
+    socket.send(JSON.stringify({
         type: "activatePerk",
         subtype: perkName,
     }))
@@ -112,7 +112,7 @@ function resetBoard() {
 
 function updateError(data) {
     alert(data.message);
-    this.resetBoard();
+    resetBoard();
 };
 
 function updateGame(data) {
@@ -137,20 +137,20 @@ function sendChatMessage(message) {
 };
 
 function receiveChatMessage(message) {
-    this.chatMessages.push(message);
+    chatMessages.value.push(message);
 };
 
 function handleMessage(event) {
     let data = JSON.parse(event.data);
     switch(data.type) {
         case "gameUpdate":
-            this.updateGame(data);
+            updateGame(data);
             break;
         case "message":
-            this.receiveChatMessage(data);
+            receiveChatMessage(data);
             break;
         case "updateError":
-            this.updateError(data);
+            updateError(data);
             break;
     }
 };
@@ -162,7 +162,7 @@ const tiles = computed(() => {
         return [];
 
     for (let player of gameData.value.players)
-        if (player.name == this.user)
+        if (player.name == user.value)
             return player.tiles;
     return [];
 });
@@ -181,7 +181,7 @@ const user = computed(() => {
     // function to decode the JWT token given to the client at login.
     // this function will decode the JWT and extract the username which will be used to play the game.
 
-    var base64Url = this.$store.state.auth.user.accessToken.split('.')[1];
+    var base64Url = store.state.auth.user.accessToken.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
@@ -192,11 +192,10 @@ const user = computed(() => {
 
 onMounted(() => {
     socket = new WebSocket(`${baseWebSocketURL}/api/game/ws/${route.params.game_id}`);
-
     socket.addEventListener("open", () => {
-        this.socket.send(JSON.stringify({
+        socket.send(JSON.stringify({
             type: "playerJoin",
-            player: user,
+            player: user.value,
         }))
     })
 
