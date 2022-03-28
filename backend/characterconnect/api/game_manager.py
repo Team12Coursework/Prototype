@@ -114,13 +114,24 @@ class GameManager:
             if not valid_start(board):
                 raise InvalidStartException()
         # find the word on the Scrabble board, and check if it's valid.
-        word: str = find_word(self.old_board, board, self.turn)
+        word = find_word(self.old_board, board, self.turn)
         if not word:
             raise InvalidWordException()
         self.old_board = board
         self.board = board
         current_player = self.players[self.current_player]
         current_player.points += calculate_points(word)
+        print("word placed:", word, "player:", current_player, "tiles:", current_player.tiles)
+        # TODO: this is pretty bad lol, lots of holes in this implementation.
+        # if the first user places GIN, and the second user places LIFE using
+        # the same I as the first player, it'll try and remove the I from the
+        # second player's tiles theoretically, if the second player has an I,
+        # and doesn't use it, it'll remove the tile anyway. not ideal :/
+        for char in word:
+            for i, tile in enumerate(current_player.tiles):
+                if char == tile[0]:
+                    current_player.tiles.pop(i)
+                    break
         # draw n number of tiles from the tileset so that len(current_player.tiles) == 7
         new_tiles = self.tileset.draw(self.num_tiles - len(current_player.tiles))
         current_player.tiles.extend(new_tiles)
