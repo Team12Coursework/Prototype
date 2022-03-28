@@ -2,7 +2,8 @@ import datetime
 import json
 from typing import Callable, Dict, List, Optional, Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket
+from starlette.websockets import WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 
 from .connection_manager import ConnectionManager
@@ -30,10 +31,10 @@ def filter_message(data: Dict[str, str]) -> Dict[str, str]:
     """function to filter chat messages"""
     
     bannedWords = ["shit","fuck","crap","bitch"] # will add more words to this
-    
+
     chatMessage = data.get('message')
     censoredMessageList = []
-    
+
     for word in chatMessage.split():
         if word in bannedWords:
             censoredMessageList.append("[redacted]")
@@ -101,6 +102,8 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
                         game.change_letters_perk()
                     await connection_manager.send_personal_message(game.asdict(), websocket)
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
+        _room = connection_manager.connected[room]
+        print("disconnect raised in room", room)
         await connection_manager.disconnect(room, websocket)
-        await connection_manager.broadcast(room, json.dumps({'type': 'playerLeft'}))
         print(f'player disconnected')
+        await connection_manager.broadcast(room, json.dumps(_room.asdict()))

@@ -33,5 +33,5 @@ app.include_router(
 # there must be a better way of doing this :D. Just wait for
 # 5 seconds before starting the database to ensure PostgreSQL
 # can startup properly in the other Docker container.
-sleep(5)
+sleep(2)
 init_db.init()

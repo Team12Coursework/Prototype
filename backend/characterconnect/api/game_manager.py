@@ -124,6 +124,7 @@ class GameManager:
         """forfeit the game and set the winner to the other player"""
         self.game_running = False
         self.winner = 1-player
+        self._players[player] = None
 
     def advance_turn(self) -> None:
         """advance the game state by a single turn, this can be called directly if
@@ -204,4 +205,3 @@ class GameManager:
             player.numPerksUsed += 1
             player.points -= 3
             player.tiles = self.tileset.draw(self.num_tiles)
-        
