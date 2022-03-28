@@ -3,23 +3,21 @@
 
     <button class= " rounded-full m-1 font-bold w-36 h-10 border-black border-solid  outline-black"  @click="toggleMuted" :class="buttonColour()">MUTE CHAT</button>
     <form @submit="sendMessage" class="add-form">
-           <div class=" bg-gray-300 border-solid border-2 rounded flex flex-col justify-between h-96 w-90/100 border-black">
-           <div class =" p-3 text-2xl font-bold text-center text h-1/6 w-auto bg-indigo-500 "> <p> Chat Box </p>  </div> 
-            <div class="border p-2 rounded flex flex-col justify-between h-96 w-90/100"> </div>
+        <div class=" bg-white border-solid border-4 shadow-lg rounded flex flex-col justify-between h-96 w-90/100 border-blue-500">
             <div class="flex flex-col">
-                 <p class="border rounded p-2 border-black w-3/4 self-end  mt-20"  v-for="message in messages" :key="message">
-
+                <p :class="colourMessage(message)" v-for="message in messages" :key="message">
                     [{{ message.sentAt }}]:
                     <span v-if="message.type === 'playerJoin'" class="italic text-gray-600">{{ message.player.name }} joined the room</span>
                     <span v-if="message.type === 'message'">({{ message.fromUser }}) {{ message.message }}</span>
                 </p>
             </div>
-            <input class=" mb-2 self-center w-10/12 border rounded p-2 bg-gray-200  " type="text" v-model="text" placeholder="Please type in your message here...." />
+            <input class="border rounded border-black p-2 w-3/4 self-center bg-gray-100 mb-1 " type="text" v-model="text" placeholder="your message here..." />
         </div>
     </form>
 </template>
 
 <script>
+
 export default {
     name: 'Chatbox',
     props: {
@@ -34,6 +32,14 @@ export default {
     },
 
     methods: {
+        colourMessage(message) {
+            if (message.fromUser == this.user) {
+                return "text-black text pl-3 pt-1.5 rounded-full w-3/4 h-12 italic bg-blue-200"
+            } else {
+                return "text-black text pl-3 pt-1.5 rounded-full w-3/4 h-12 italic bg-red-400"
+            }
+        },
+        
         sendMessage(e) {
             e.preventDefault();
 

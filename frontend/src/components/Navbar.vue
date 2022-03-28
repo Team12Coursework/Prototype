@@ -1,10 +1,10 @@
 <template>
-    <nav class="bg-gray-100 border-b shadow-sm">
+    <nav class="bg-gradient-to-r from-blue-400 to-gray-100 border-b shadow-sm">
         <div class="px-2 sm:px-6 lg:px-8">
             <div class="relative flex items-center justify-between h-14">
 
                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center font-bold text-lg text-gray-800"><router-link to="/">CharacterConnect</router-link></div>
+                    <div class="flex-shrink-0 flex items-center font-bold text-lg text-white"><router-link to="/"> <img src="../assets/gamelogo.png" alt="logo" class = "h-15 w-32"> </router-link></div>
                 </div>
 
                 <div class="flex items-center space-x-2 text-xs">
