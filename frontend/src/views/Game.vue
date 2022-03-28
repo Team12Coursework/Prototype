@@ -116,6 +116,9 @@ function updateError(data) {
 };
 
 function updateGame(data) {
+    if (data.winner !== null) {
+        router.push({ name: "GameOver" });
+    }
     gameData.value = data;
     resetBoard();
 };
