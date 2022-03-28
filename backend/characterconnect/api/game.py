@@ -53,7 +53,6 @@ def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[st
         game.next_turn(board)
         return game.asdict()
     except InvalidWordException as error:
-        print(error)
         return {'type': 'updateError', 'message': 'invalid word placed'}
 
 

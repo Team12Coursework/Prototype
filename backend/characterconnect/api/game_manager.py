@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import Dict, List, MutableSet, Tuple, Optional
-import random
+from typing import Dict, List, Optional
 import dataclasses
 
 from .scrabble import find_word, valid_start, construct_empty_board, calculate_points
 from fastapi import WebSocket
+from ..game.tiles import TileManager
 
 
 class InvalidWordException(Exception):
@@ -47,47 +47,10 @@ class Player:
         return {'name': self.name, 'points': self.points, 'tiles': self.tiles}
 
 
-class TileManager:
-    """tile manager class will manage the deck of tiles for the game to draw upon"""
-    def __init__(self) -> TileManager:
-        # dictionary holding the tile and the number of times the tile occurs
-        self.tiles: Dict[str, int] = {
-            'E': 12, 'A': 9, 'I': 9, 'O': 8, 'N': 6, 'R': 6,
-            'T': 6, 'L': 4,  'S': 4, 'U': 4, 'D': 4, 'G': 3,
-            'B': 2, 'C': 2,  'M': 2, 'P': 2, 'F': 2, 'H': 2,
-            'V': 2, 'W': 2,  'Y': 2, 'K': 1, 'J': 1, 'X': 1,
-            'Q': 1, 'Z': 1,
-        }
-        self.remaining_tiles: List[str] = list(self.tiles.keys())
-
-    def draw(self, n: int) -> List[str]:
-        """draw n tiles from the available tileset"""
-        if len(self.remaining_tiles) < n:
-            raise IndexError(f'cannot remove {n} tiles from tileset, only {len(self.remaining_tiles)} tiles remaining')
-        letters: List[str] = []
-        for _ in range(n):
-            letter: str = random.choice(self.remaining_tiles)
-            if self.tiles[letter] >= 1:
-                self.tiles[letter] -= 1
-            else:
-                self.remaining_tiles.remove(letter)
-            letters.append(letter)
-        return letters
-
-    def draw_remaining(self) -> List[str]:
-        """draws the remaining tiles from the deck"""
-        letters: List[str] = []
-        for letter, num_remaining in self.tiles.items():
-            if num_remaining == 0:
-                continue
-            letters.append([letter] * num_remaining)
-        return letters
-
-
 class GameManager:
     """GameManager class takes care of all general game functions.
     The asdict function represents the entire game state, and should be sent to the client on every update"""
-    def __init__(self, game_id: int) -> GameManager:
+    def __init__(self, game_id: int) -> None:
         self.id: int = game_id
         self.tileset = TileManager()
         # manage the players with an integer bounded to 0-1.
@@ -142,7 +105,7 @@ class GameManager:
             player.tiles = self.tileset.draw(self.num_tiles)
         self.game_running = True
 
-    def next_turn(self, board: List[List[str]]) -> int:
+    def next_turn(self, board: List[List[str]]) -> None:
         """advance the game state by a single turn, mutate the game board with the new word.
         this function will raise an InvalidGameStateException if the user places an invalid word.
         raising this exception will ensure that the board is not mutated in any way, and it will remain
@@ -152,16 +115,27 @@ class GameManager:
             if not valid_start(board):
                 raise InvalidStartException()
         # find the word on the Scrabble board, and check if it's valid.
-        word: str = find_word(self.old_board, board, self.turn)
+        word = find_word(self.old_board, board, self.turn)
         if not word:
             raise InvalidWordException()
         self.old_board = board
         self.board = board
         current_player = self.players[self.current_player]
         current_player.points += calculate_points(word)
+        print("word placed:", word, "player:", current_player, "tiles:", current_player.tiles)
+        # TODO: this is pretty bad lol, lots of holes in this implementation.
+        # if the first user places GIN, and the second user places LIFE using
+        # the same I as the first player, it'll try and remove the I from the
+        # second player's tiles theoretically, if the second player has an I,
+        # and doesn't use it, it'll remove the tile anyway. not ideal :/
+        for char in word:
+            for i, tile in enumerate(current_player.tiles):
+                if char == tile[0]:
+                    current_player.tiles.pop(i)
+                    break
         # draw n number of tiles from the tileset so that len(current_player.tiles) == 7
         new_tiles = self.tileset.draw(self.num_tiles - len(current_player.tiles))
-        current_player.tiles.append(new_tiles)
+        current_player.tiles.extend(new_tiles)
 
         self.advance_turn()
 

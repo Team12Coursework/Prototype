@@ -14,7 +14,7 @@
                         </div>
 
                         <div class="w-full p-2 bg-black shadow-inner rounded h-24 flex space-x-2">
-                            <card v-for="(tile, i) in tiles" :key="tile" :letter="tile" :id="i" :draggable="true"/>
+                            <card v-for="tile in tiles" :key="tile[2]" :letter="tile[0]" :points="tile[1]" :id="tile[2]" :draggable="true"/>
                         </div>
                     </div>
 
@@ -108,6 +108,7 @@ function tileColour(squareId) {
 };
 
 function resetBoard() {
+    console.log(gameData.value.board);
     store.commit("board/updateBoard", JSON.parse(JSON.stringify(gameData.value.board)));
 };
 
@@ -148,6 +149,7 @@ function handleMessage(event) {
     let data = JSON.parse(event.data);
     switch(data.type) {
         case "gameUpdate":
+            console.log(data);
             updateGame(data);
             break;
         case "message":
