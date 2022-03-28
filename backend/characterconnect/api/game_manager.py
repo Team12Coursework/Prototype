@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import Dict, List, MutableSet, Tuple, Optional
-import random
+from typing import Dict, List, Optional
 import dataclasses
 
 from .scrabble import find_word, valid_start, construct_empty_board, calculate_points
 from fastapi import WebSocket
+from ..game.tiles import TileManager
 
 
 class InvalidWordException(Exception):
@@ -50,7 +50,7 @@ class Player:
 class GameManager:
     """GameManager class takes care of all general game functions.
     The asdict function represents the entire game state, and should be sent to the client on every update"""
-    def __init__(self, game_id: int) -> GameManager:
+    def __init__(self, game_id: int) -> None:
         self.id: int = game_id
         self.tileset = TileManager()
         # manage the players with an integer bounded to 0-1.
@@ -104,7 +104,7 @@ class GameManager:
             player.tiles = self.tileset.draw(self.num_tiles)
         self.game_running = True
 
-    def next_turn(self, board: List[List[str]]) -> int:
+    def next_turn(self, board: List[List[str]]) -> None:
         """advance the game state by a single turn, mutate the game board with the new word.
         this function will raise an InvalidGameStateException if the user places an invalid word.
         raising this exception will ensure that the board is not mutated in any way, and it will remain
@@ -123,7 +123,7 @@ class GameManager:
         current_player.points += calculate_points(word)
         # draw n number of tiles from the tileset so that len(current_player.tiles) == 7
         new_tiles = self.tileset.draw(self.num_tiles - len(current_player.tiles))
-        current_player.tiles.append(new_tiles)
+        current_player.tiles.extend(new_tiles)
 
         self.advance_turn()
 
@@ -167,4 +167,3 @@ class GameManager:
             player.numPerksUsed += 1
             player.points -= 3
             player.tiles = self.tileset.draw(self.num_tiles)
-        
