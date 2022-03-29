@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 import random
 import dataclasses
 
-from .scrabble import find_word, valid_start, construct_empty_board, calculate_points
+from .scrabble import find_word, valid_start, construct_empty_board, calculate_points, difference
 from fastapi import WebSocket
 
 
@@ -141,7 +141,7 @@ class GameManager:
             player.tiles = self.tileset.draw(self.num_tiles)
         self.game_running = True
 
-    def next_turn(self, board: List[List[str]]) -> int:
+    def next_turn(self, board: List[List[str | None]]) -> int:
         """advance the game state by a single turn, mutate the game board with the new word.
         this function will raise an InvalidGameStateException if the user places an invalid word.
         raising this exception will ensure that the board is not mutated in any way, and it will remain
@@ -151,23 +151,22 @@ class GameManager:
             if not valid_start(board):
                 raise InvalidStartException()
         # find the word on the Scrabble board, and check if it's valid.
-        game = GameManager(self.id)
-        word, reused_letters = find_word(self.old_board, board, game)
+        word = find_word(self.old_board, board, self.turn)
+        placed = difference(self.old_board, board)
         if not word:
             raise InvalidWordException()
         self.old_board = board
         self.board = board
         current_player = self.players[self.current_player]
         current_player.points += calculate_points(word)
-        for char in word:
-            # if the player didn't place the letter (i.e. used a letter that was already on the board)
-            # don't try and remove that letter from their tileset.
-            if char in reused_letters:
-                continue
+        print("word:", word, "placed:", placed)
+        # if the player didn't place the letter (i.e. used a letter that was already on the board)
+        # don't try and remove that letter from their tileset.
+        for char in placed:
             current_player.tiles.remove(char)
         # draw n number of tiles from the tileset so that len(current_player.tiles) == 7
         new_tiles = self.tileset.draw(self.num_tiles - len(current_player.tiles))
-        current_player.tiles.append(new_tiles)
+        current_player.tiles.extend(new_tiles)
 
         self.advance_turn()
 
