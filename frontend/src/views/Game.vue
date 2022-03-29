@@ -22,8 +22,8 @@
                         <chatbox :messages="chatMessages" @update:messages="sendChatMessage($event)" />
 
                         <div v-if="piecePlaced" class="flex space-x-2 w-full">
-                            <button @click="resetBoard" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
-                            <button @click="nextTurn" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
+                            <button @click="resetBoard" onclick="PlayRW()" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
+                            <button @click="nextTurn" onclick="PlayNTS()" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
                         </div>
 
                         <div class="flex space-x-2 w-full">
@@ -60,6 +60,9 @@ const placed = ref(false);
 
 const localBoard = null;
 let socket = null;
+
+import power_up from "@/assets/music/power up.wav"
+const perkSound = new Audio(power_up)
 
 function activatePerk(perkName){
     socket.send(JSON.stringify({
@@ -107,8 +110,13 @@ function tileColour(squareId) {
     return "background: rgba(243, 244, 246, 0.5)";
 };
 
+
+import reset_word from "@/assets/music/reset_word.wav"
+const resetWord = new Audio(reset_word)
+
 function resetBoard() {
     console.log(gameData.value.board);
+    resetWord.play();
     store.commit("board/updateBoard", JSON.parse(JSON.stringify(gameData.value.board)));
 };
 
@@ -125,7 +133,11 @@ function updateGame(data) {
     resetBoard();
 };
 
+import next_turn from "@/assets/music/next_turn.wav"
+const nextTurnSound = new Audio(next_turn)
+
 function nextTurn() {
+  nextTurnSound.play();
     socket.send(JSON.stringify({
         type: "gameUpdate",
         board: store.state.board.board,
