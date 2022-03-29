@@ -19,6 +19,10 @@
                     </div>
 
                     <div class="w-1/2 flex flex-col">
+                      <div>
+                        <audio id="bgm" src="music 4.mp3" preload="auto"></audio>
+                        <button @click="togglePlay" class="cursor-pointer p-2 bg-blue-400 w-full rounded text-black">Toggle Music</button>
+                      </div>
                         <chatbox :messages="chatMessages" @update:messages="sendChatMessage($event)" />
 
                         <div v-if="piecePlaced" class="flex space-x-2 w-full">
@@ -60,6 +64,26 @@ const placed = ref(false);
 
 const localBoard = null;
 let socket = null;
+
+import music_4 from "@/assets/music/music 4.mp3"
+const bgm = new Audio(music_4)
+
+function music() {
+  bgm.play()
+}
+
+var isPlaying = false;
+
+function togglePlay() {
+  isPlaying ? bgm.pause() : bgm.play();
+}
+
+bgm.onplaying = function() {
+  isPlaying = true;
+};
+bgm.onpause = function() {
+  isPlaying = false;
+};
 
 import power_up from "@/assets/music/power up.wav"
 const perkSound = new Audio(power_up)
