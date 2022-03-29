@@ -28,19 +28,21 @@
                 <div class="flex-grow"></div>
                 <div class="flex flex-col">
                     <div class="flex justify-around mb-4">
-                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our youtube">
-                            <img class="h-8 w-8" src='../assets/images/youtube.png'>
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://twitter.com/CC0nnect" title="Go to our twitter">
+                            <img class="h-8 w-8" src='../assets/images/twitter.png'>
                         </a>
 
-                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our reddit">
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://www.reddit.com/r/CharacterConnect" title="Go to our reddit">
                             <img class="h-8 w-8" src='../assets/images/reddit.png'>
+
+
                         </a>
 
-                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our discord">
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://discord.gg/n5w42a5thH" title="Go to our discord">
                             <img class="h-8 w-8" src='../assets/images/discord.png'>
                         </a>
 
-                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="#" title="Go to our instagram">
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://www.instagram.com/characterconnect" title="Go to our instagram">
                             <img class="h-8 w-8" src='../assets/images/instagram.png'>
                         </a>
                     </div>
@@ -78,6 +80,6 @@ function handleLogin(event) {
 
 <style scoped>
 .logo-max-width{
-    max-width: 120px;
+    max-width: 200px;
 }
 </style>

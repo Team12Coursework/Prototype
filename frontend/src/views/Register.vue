@@ -35,10 +35,26 @@
                 <div class="flex-grow"></div>
                 <div class="flex flex-col">
                     <div class="flex justify-around mb-4">
-                    <a v-for="platform in socialMedia" class="transform hover:scale-125 transition duration-200 ease-in-out" title="Go to our youtube">
-                        <img class="h-8 w-8" :src="platform.link">
-                    </a>
-                </div>
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://twitter.com/CC0nnect" title="Go to our twitter">
+                            <img class="h-8 w-8" src='../assets/images/twitter.png'>
+                        </a>
+
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://www.reddit.com/r/CharacterConnect" title="Go to our reddit">
+                            <img class="h-8 w-8" src='../assets/images/reddit.png'>
+
+
+                        </a>
+
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://discord.gg/n5w42a5thH" title="Go to our discord">
+                            <img class="h-8 w-8" src='../assets/images/discord.png'>
+                        </a>
+
+                        <a class="transform hover:scale-125 transition duration-200 ease-in-out" href="https://www.instagram.com/characterconnect" title="Go to our instagram">
+                            <img class="h-8 w-8" src='../assets/images/instagram.png'>
+                        </a>
+                    </div>
+
+            
 
                 <p class="text-xs text-center flex flex-col">
                     <a class="underline underline-offset-2 text-blue-400 hover:text-blue-600" href="https://team12coursework.github.io/index.html#rules" target="_blank">Learn more</a>
@@ -54,11 +70,15 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-
+ 
 import RegisterPageLayout from "@/layouts/RegisterPageLayout.vue";
 
 const socialMedia = [
-    { name: "YouTube", link: require("@/assets/images/instagram.png") },
+    {
+
+
+
+    name: "YouTube", url: "https://discord.gg/n5w42a5thH", link: require("@/assets/images/instagram.png") },
     { name: "Discord", link: require("@/assets/images/discord.png") },
     { name: "Reddit",  link: require("@/assets/images/reddit.png") },
     { name: "YouTube", link: require("@/assets/images/youtube.png") },
@@ -82,6 +102,6 @@ function handleRegister(event) {
 
 <style scoped>
 .logo-max-width{
-    max-width: 120px;
+    max-width: 200px;
 }
 </style>
