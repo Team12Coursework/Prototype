@@ -1,77 +1,78 @@
 <template>
     <!-- Chatbox component used for the Chat functionality in the game screen -->
 
-    <button class= " rounded-full m-1 font-bold w-36 h-10 border-black border-solid  outline-black"  @click="toggleMuted" :class="buttonColour()">MUTE CHAT</button>
+
     <form @submit="sendMessage" class="add-form">
-        <div class=" bg-white border-solid border-4 shadow-lg rounded flex flex-col justify-between h-96 w-90/100 border-blue-500">
-            <div class="flex flex-col">
-                <p :class="colourMessage(message)" v-for="message in messages" :key="message">
-                    [{{ message.sentAt }}]:
-                    <span v-if="message.type === 'playerJoin'" class="italic text-gray-600">{{ message.player.name }} joined the room</span>
-                    <span v-if="message.type === 'message'">({{ message.fromUser }}) {{ message.message }}</span>
-                </p>
+        <div class=" bg-white p-2 shadow-lg rounded flex flex-col h-96 w-90/100">
+            <div class="rounded-md m-1 w-24 font-bold h-10 select-none cursor-pointer flex justify-center items-center" @click="muted = !muted" :class="buttonColour()">{{ muted ? "UNMUTE" : "MUTE" }}</div>
+
+            <div class="flex flex-col justify-between flex-grow overflow-auto">
+                <div class="flex flex-col space-y-2 p-2">
+                    <p class="text-black p-2 pl-4 rounded-full w-3/4 italic" :class="colourMessage(message)" v-for="message in messages" :key="message">
+                        [{{ message.sentAt }}]:
+                        <span v-if="message.type === 'playerJoin'" class="italic text-gray-600">{{ message.player.name }} joined the room</span>
+                        <span v-if="message.type === 'message'">({{ message.fromUser }}) {{ message.message }}</span>
+                    </p>
+                </div>
+
+                <div class="w-full flex space-x-2">
+                    <input class="border rounded border-black p-2 w-full bg-gray-100" type="text" v-model="text" placeholder="your message here..." />
+                    <button class="rounded-lg bg-blue-500 hover:bg-blue-400 duration-100 w-1/2 text-white">Send</button>
+                </div>
             </div>
-            <input class="border rounded border-black p-2 w-3/4 self-center bg-gray-100 mb-1 " type="text" v-model="text" placeholder="your message here..." />
         </div>
     </form>
 </template>
 
-<script>
+<script setup>
+import { computed, defineProps, ref, defineEmits } from "vue";
+import { useStore } from "vuex";
 
-export default {
-    name: 'Chatbox',
-    props: {
-        messages: Array,
-    },
+const store = useStore();
 
-    data() {
-        return {
-            text: "",
-            muted: false
-        }
-    },
+const text = ref("");
+const muted = ref(false);
 
-    methods: {
-        colourMessage(message) {
-            if (message.fromUser == this.user) {
-                return "text-black text pl-3 pt-1.5 rounded-full w-3/4 h-12 italic bg-blue-200"
-            } else {
-                return "text-black text pl-3 pt-1.5 rounded-full w-3/4 h-12 italic bg-red-400"
-            }
-        },
-        
-        sendMessage(e) {
-            e.preventDefault();
+const props = defineProps({
+    messages: { type: Array, required: true }
+});
 
-            if(!this.text) {
-                alert('Please add a comment');
-                return;
-            }
+const emit = defineEmits(["update:messages", "update:muted"]);
 
-            this.$emit("update:messages", this.text);
-            this.text = ""; // reset the textbox back to an empty string
-        },
-         toggleMuted(){
-            this.muted = !this.muted;
-        },
-        buttonColour(){
-            return this.muted ? "bg-red-600" : "bg-lime-400";
-        },
-    },
+function colourMessage(message) {
+    if (message.fromUser == user.value) {
+        return "bg-blue-200"
+    } else {
+        return "bg-red-400"
+    }
+};
 
-    computed: {
-        user() {
-            // function to decode the JWT token given to the client at login.
-            // this function will decode the JWT and extract the username which will be used to play the game.
+function sendMessage(event) {
+    event.preventDefault();
 
-            var base64Url = this.$store.state.auth.user.accessToken.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
+    if(!text.value) {
+        alert('Please add a comment');
+        return;
+    }
 
-            return JSON.parse(jsonPayload).sub;
-        },
-    },
-}
+    console.log("in sendMessage");
+    emit("update:messages", text.value);
+    text.value = ""; // reset the textbox back to an empty string
+};
+
+function buttonColour(){
+    return muted.value ? "bg-red-600" : "bg-blue-400";
+};
+
+const user = computed(() => {
+    // function to decode the JWT token given to the client at login.
+    // this function will decode the JWT and extract the username which will be used to play the game.
+    var base64Url = store.state.auth.user.accessToken.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload).sub;
+});
 </script>
