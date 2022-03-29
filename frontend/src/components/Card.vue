@@ -26,7 +26,7 @@ export default{
             required: true,
         },
         points: {
-            type: String,
+            type: Number,
             required: true,
         }
     },
