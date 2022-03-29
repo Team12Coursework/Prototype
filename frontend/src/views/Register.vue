@@ -100,14 +100,30 @@ function handleRegister(event) {
 
 // password valid function, will return a String with an error message
 // if there are any, otherwise return null.
+//The function is used to check for password strength and helps to ensure that only a strong password has been entered to register for an account
 const passwordErrors = computed(() => {
+    // regex expression to monitor for capital letters
+    const capitals =/[A-Z]/
+    // regex expression to monitor for lower case letters
+    const lower =/[a=z]/
+    // regex expression to monitor for numbers
+    const numbers =/[0-9]/
     // regex expression to monitor for special characters
     const specialCharacters = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
     if (password.value.length < MIN_LENGTH) {
         return `The password must be more than ${MIN_LENGTH} characters long`
     }
     if (specialCharacters.test(password.value) === false) {
-        return "There must be one or more special characters in the password"
+        return "There must be one or more special characters used within the password entered"
+    }
+    if (capitals.test(password.value) === false) {
+        return "There must be at least one upper case letter used within the password entered"
+    }
+     if (lower.test(password.value) === false) {
+        return "There must be at least one lower case letter used within the password entered"
+    }
+     if (numbers.test(password.value) === false) {
+        return "There must be at least one number used within the password entered"
     }
     return null
 })
