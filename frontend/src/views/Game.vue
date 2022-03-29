@@ -19,6 +19,7 @@
                     </div>
 
                     <div class="w-1/2 flex flex-col">
+                      
                         <chatbox :messages="chatMessages" @update:messages="sendChatMessage($event)" />
 
                         <div v-if="piecePlaced" class="flex space-x-2 w-full">
