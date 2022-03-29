@@ -1,9 +1,7 @@
 from __future__ import annotations
-from ctypes.wintypes import CHAR
-from typing import Dict, List, MutableSet, Tuple, Optional
+from typing import Dict, List, Optional
 import random
 import dataclasses
-from xmlrpc.client import boolean
 
 from .scrabble import find_word, valid_start, construct_empty_board, calculate_points
 from fastapi import WebSocket
@@ -51,7 +49,7 @@ class Player:
 
 class TileManager:
     """tile manager class will manage the deck of tiles for the game to draw upon"""
-    def __init__(self) -> TileManager:
+    def __init__(self) -> None:
         # dictionary holding the tile and the number of times the tile occurs
         self.tiles: Dict[str, int] = {
             'E': 12, 'A': 9, 'I': 9, 'O': 8, 'N': 6, 'R': 6,
@@ -89,7 +87,7 @@ class TileManager:
 class GameManager:
     """GameManager class takes care of all general game functions.
     The asdict function represents the entire game state, and should be sent to the client on every update"""
-    def __init__(self, game_id: int) -> GameManager:
+    def __init__(self, game_id: int) -> None:
         self.id: int = game_id
         self.tileset = TileManager()
         # manage the players with an integer bounded to 0-1.
@@ -154,13 +152,19 @@ class GameManager:
                 raise InvalidStartException()
         # find the word on the Scrabble board, and check if it's valid.
         game = GameManager(self.id)
-        word: str = find_word(self.old_board, board, game)
+        word, reused_letters = find_word(self.old_board, board, game)
         if not word:
             raise InvalidWordException()
         self.old_board = board
         self.board = board
         current_player = self.players[self.current_player]
         current_player.points += calculate_points(word)
+        for char in word:
+            # if the player didn't place the letter (i.e. used a letter that was already on the board)
+            # don't try and remove that letter from their tileset.
+            if char in reused_letters:
+                continue
+            current_player.tiles.remove(char)
         # draw n number of tiles from the tileset so that len(current_player.tiles) == 7
         new_tiles = self.tileset.draw(self.num_tiles - len(current_player.tiles))
         current_player.tiles.append(new_tiles)
@@ -171,21 +175,6 @@ class GameManager:
         """toggle the value of current_player between 0 and 1, returns the new value of current_player."""
         self.current_player = 1 - self.current_player
         return self.current_player
-
-    def remove_tiles(self, word, reusedLetter : CHAR):
-        alreadyRemoved : boolean = False
-        current_player = self._players[self.current_player]
-
-        for char in word:
-            if alreadyRemoved is False:
-                if char in current_player.tiles and char is not reusedLetter:
-                    current_player.tiles.remove(char)
-                elif char in current_player.tiles and char is reusedLetter:
-                    current_player.tiles.remove(char)
-                    alreadyRemoved = True
-            else:
-                if char in current_player.tiles:
-                    current_player.tiles.remove(char)
 
     def asdict(self) -> Dict[str, str]:
         return {
