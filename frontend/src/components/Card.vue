@@ -3,7 +3,7 @@
     Card component used to style the Scrabble pieces.
     -->
     <div :id="id" :draggable="draggable"
-        class="font-bold w-full h-full flex flex-col items-center justify-center text-white bg-gradient-to-br from-blue-600 to-purple-600 cursor-pointer rounded"
+        class="font-bold p-2 w-full h-full flex flex-col items-center justify-center text-white bg-gradient-to-br from-blue-600 to-purple-600 cursor-pointer rounded"
         @dragstart="dragStart" @dragover.stop>
         <p class="w-full h-full flex items-center justify-center">{{ letter }}</p>
         <p class="w-full h-full flex items-end justify-end text-sm">{{ points }}</p>
@@ -26,7 +26,7 @@ export default{
             required: true,
         },
         points: {
-            type: String,
+            type: Number,
             required: true,
         }
     },

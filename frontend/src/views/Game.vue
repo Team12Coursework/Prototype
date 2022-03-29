@@ -16,22 +16,21 @@
                         <div class="w-full p-2 bg-black shadow-inner rounded h-24 flex space-x-2">
                             <card v-for="tile in tiles" :key="tile[2]" :letter="tile[0]" :points="tile[1]" :id="tile[2]" :draggable="true"/>
                         </div>
+
+                        <div v-if="piecePlaced" class="flex space-x-2 w-full justify-between">
+                            <button @click="resetBoard" class="cursor-pointer text-xl font-semibold bg-blue-500 w-36 p-4 rounded-lg text-white">Reset</button>
+                            <button @click="nextTurn" class="cursor-pointer text-xl font-semibold bg-blue-500 w-36 rounded-lg text-white">Next Turn</button>
+                        </div>
                     </div>
 
-                    <div class="w-1/2 flex flex-col">
-                        <chatbox :messages="chatMessages" @update:messages="sendChatMessage($event)" />
-
-                        <div v-if="piecePlaced" class="flex space-x-2 w-full">
-                            <button @click="resetBoard" onclick="PlayRW()" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Reset</button>
-                            <button @click="nextTurn" onclick="PlayNTS()" class="cursor-pointer p-2 bg-blue-500 w-full rounded text-white">Next Turn</button>
-                        </div>
+                    <div class="w-3/4 flex flex-col space-y-2">
+                        <chatbox :messages="chatMessages" @update:messages="newValue => sendChatMessage(newValue)" />
 
                         <div class="flex space-x-2 w-full">
-                            <button @click="activatePerk('oneRandomLetter')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Tile</button>
-                            <button @click="activatePerk('twoRandomLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Add Two Tiles</button>
-                            <button @click="activatePerk('changeLetters')" class="cursor-pointer p-2 bg-gray-400 w-full rounded text-white">Shuffle Tiles</button>
+                            <button @click="activatePerk('oneRandomLetter')" class="cursor-pointer p-2 bg-gray-400 hover:bg-gray-300 duration-300 w-full rounded text-white">Add Tile</button>
+                            <button @click="activatePerk('twoRandomLetters')" class="cursor-pointer p-2 bg-gray-400 hover:bg-gray-300 duration-300 w-full rounded text-white">Add Two Tiles</button>
+                            <button @click="activatePerk('changeLetters')" class="cursor-pointer p-2 bg-gray-400 hover:bg-gray-300 duration-300 w-full rounded text-white">Shuffle Tiles</button>
                         </div>
-                        <button :class="muted ? 'bg-red-400' : 'bg-blue-400'" @click="muted = !muted">Mute</button>
                     </div>
                 </div>
             </div>
@@ -65,6 +64,7 @@ import power_up from "@/assets/music/power up.wav"
 const perkSound = new Audio(power_up)
 
 function activatePerk(perkName){
+    console.log("perk activated:", perkName);
     socket.send(JSON.stringify({
         type: "activatePerk",
         subtype: perkName,
@@ -145,6 +145,7 @@ function nextTurn() {
 };
 
 function sendChatMessage(message) {
+    console.log("in sendChatMessage");
     socket.send(JSON.stringify({
         type: "message",
         message: message,
@@ -154,6 +155,7 @@ function sendChatMessage(message) {
 };
 
 function receiveChatMessage(message) {
+    console.log("received message", message);
     chatMessages.value.push(message);
 };
 

@@ -23,8 +23,9 @@ def current_time() -> str:
 async def handle_perk_error(callback: Callable[Any, Any], connection_manager, websocket, *args) -> None:
     try:
         callback(*args)
-    except ValueError as error:
-        await connection_manager.send_personal_message(json.dumps({"type": "gameError", "message": str(error)}), websocket)
+    except Exception as error:
+        print("exception raised in perk error")
+        await connection_manager.send_personal_message(json.dumps({"type": "updateError", "message": str(error)}), websocket)
 
 
 def filter_message(data: Dict[str, str]) -> Dict[str, str]:
@@ -91,15 +92,16 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
                     await connection_manager.broadcast(room, json.dumps(state))
                 elif state['type'] == 'updateError':
                     await connection_manager.send_personal_message(json.dumps(state), websocket)
-            elif decoded['type'] == "perkActive":
-                    game: GameManager = connection_manager.connected[room]
+            elif decoded['type'] == "activatePerk":
+                    game = connection_manager.connected[room]
                     if decoded['subtype'] == 'oneRandomLetter':
                         await handle_perk_error(game.extra_letter_perk, connection_manager, websocket, 1)
                     elif decoded['subtype'] == 'twoRandomLetters':
                         await handle_perk_error(game.extra_letter_perk, connection_manager, websocket, 2)
                     elif decoded['subtype'] == 'changeLetters':
-                        game.change_letters_perk()
-                    await connection_manager.send_personal_message(game.asdict(), websocket)
+                        await handle_perk_error(game.change_letters_perk, connection_manager, websocket)
+                    print("perk activated, new game state", game.asdict())
+                    await connection_manager.send_personal_message(json.dumps(game.asdict()), websocket)
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
         _room = connection_manager.connected[room]
         print("disconnect raised in room", room)
