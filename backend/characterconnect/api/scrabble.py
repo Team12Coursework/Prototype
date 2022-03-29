@@ -38,7 +38,7 @@ def find_word(arr1, arr2, game: GameManager):
                 if arr1[x][y] != arr2[x][y]:  # If the original old array does not contain the letter
                     y2 = y
 
-                    if y2 < 14 and arr2[x][y2 + 1]:
+                    if y2 < 14 and (arr2[x][y2 + 1] or arr2[x][y2 - 1]):
                         x3 = x
                         y3 = y - 1
                         while arr2[x][y2 - 1]:  # It will find where the word starts
@@ -56,7 +56,7 @@ def find_word(arr1, arr2, game: GameManager):
                             if y2 == 15:
                                 break
                     x2 = x
-                    if x2 < 14 and arr2[x2 + 1][y]:
+                    if x2 < 14 and (arr2[x2 + 1][y] or arr2[x2 - 1][y]):
                         x3 = x - 1
                         y3 = y
                         while arr2[x2 - 1][y]:
