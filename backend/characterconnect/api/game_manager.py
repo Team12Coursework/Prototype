@@ -123,11 +123,14 @@ class GameManager:
         self.board = board
         current_player = self.players[self.current_player]
         current_player.points += calculate_points(word)
-        print("word:", word, "placed:", placed)
+        print("word:", word, "placed:", placed, "current player tiles:", current_player.tiles)
         # if the player didn't place the letter (i.e. used a letter that was already on the board)
         # don't try and remove that letter from their tileset.
         for char in placed:
-            current_player.tiles.remove(char)
+            for i, tile in enumerate(current_player.tiles):
+                if tile[0] == char:
+                    current_player.tiles.pop(i)
+                    break
         # draw n number of tiles from the tileset so that len(current_player.tiles) == 7
         new_tiles = self.tileset.draw(self.num_tiles - len(current_player.tiles))
         current_player.tiles.extend(new_tiles)
@@ -157,18 +160,19 @@ class GameManager:
         if player.points < 2 * numLetters:
             raise ValueError("Not enough points for the perk")
         elif player.numPerksUsed >= player.numPerksAllowed:
-            raise InvalidPerkException()
+            raise ValueError("Not enough perks remaining")
         else:
             player.points -=  2 * numLetters
             player.numPerksUsed += 1
             new_tile = self.tileset.draw(numLetters)
-            player.tiles.append(new_tile)
+            player.tiles.extend(new_tile)
 
     def change_letters_perk(self) -> None:
+        player = self._players[self.current_player]
         if player.points < 3:
             raise ValueError("Not enough points for the perk")
         elif player.numPerksUsed >= player.numPerksAllowed:
-            raise InvalidPerkException()
+            raise ValueError("Not enough perks remaining")
         else:
             player = self._players[self.current_player]
             player.numPerksUsed += 1
