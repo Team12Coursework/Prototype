@@ -1,7 +1,4 @@
-from ctypes.wintypes import CHAR
 from typing import Dict, Optional, List
-
-from backend.characterconnect.api.game_manager import GameManager
 
 points: Dict[str, int] = {
     'A': 1, 'B': 4, 'C': 1, 'D': 2, 'E': 1, 'F': 3, 'G': 2, 'H': 3, 'I': 1, 'J': 8, 'K': 5, 'L': 1, 'M': 3, 'N': 1,
@@ -16,10 +13,11 @@ def calculate_points(word: str) -> int:
     """return the number of points the given word is worth"""
     return sum(points[char] for char in word)
 
-def find_word(arr1, arr2, game: GameManager):
+def find_word(arr1: list[list[str | None]], arr2: list[list[str | None]], turn: int) -> tuple[str, list[str]]:
     """will search the array for the word and the Database to see if it exists"""
 
     word: str = ''
+    reused_letters: list[str] = []
 
     x: int = 0
     y: int = 0
@@ -48,7 +46,7 @@ def find_word(arr1, arr2, game: GameManager):
                                 word += arr2[x][y2]
 
                             # For checking if the word is connected to another word
-                            if game.turn > 0:
+                            if turn > 0:
                                 if 0 <= x < 14 and arr2[x + 1][y2] or arr2[x - 1][y2]:
                                     check1 = check1 + 1
 
@@ -66,7 +64,7 @@ def find_word(arr1, arr2, game: GameManager):
                                 word += arr2[x2][y]
 
                             # For checking if the word is connected to another word
-                            if game.turn > 0:
+                            if turn > 0:
                                 if 0 <= y < 14 and arr2[x2][y + 1] or arr2[x2][y - 1]:
                                     check2 = check2 + 1
                             x2 = x2 + 1
@@ -84,14 +82,16 @@ def find_word(arr1, arr2, game: GameManager):
         else:
             break
  
-    reusedLetter : CHAR = arr2[x3][y3]
-    game.remove_word(word, reusedLetter)
+    reused = arr2[x3][y3]
+    reused_letters.append(reused)
 
     if len(word) == 0:
-        return ""
-    elif (game.turn > 0) and (check1 == 0) and (check2 == 0):
-        return ""
-    return word
+        return "", []
+
+    elif (turn > 0) and (check1 == 0) and (check2 == 0):
+        return "", []
+
+    return word, reused_letters
 
 
 def valid_start(board) -> bool:
