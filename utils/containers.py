@@ -1,4 +1,4 @@
-from typing import Dict, List
+from multiprocessing import connection
 from time import sleep
 import json
 
@@ -13,11 +13,11 @@ PostgreSQL and a Redis instance.
 """
 
 # default connection authentication for the local database
-connection_auth: Dict[str, str] = {
+connection_auth: dict[str, str] = {
     'user':     'postgres',
     'host':     'localhost',
-    'password': 'cc123',
-    'database': 'character_connect',
+    'password': 'aaaf53ea-aab5-11ec-b909-0242ac120002',
+    'database': 'postgres',
 }
 
 
@@ -50,7 +50,7 @@ def create_schema() -> None:
 def add_postgres_dictionary() -> None:
     """function to insert the dictionary into the PostgreSQL database"""
     with open('data/dictionary.txt') as file:
-        data: List[str] = file.readlines()
+        data: list[str] = file.readlines()
 
     # formatting args into a COPY statement instead of an INSERT will dramatically
     # decrease insert time.
@@ -61,17 +61,15 @@ def add_postgres_dictionary() -> None:
     connection.close()
 
 
-def postgres() -> docker.models.containers.Container:
-    """
-    Function starts a PostgreSQL docker container.
+def postgres():
+    """Function starts a PostgreSQL docker container.
     The started container will have the following login details:
     username: postgres
     password: cc123
-    database: character_count
-    """
+    database: character_count"""
 
-    client: docker.DockerClient = docker.from_env()
-    container: docker.models.containers.Container = client.containers.run(
+    client = docker.from_env()
+    container = client.containers.run(
         'postgres:latest',
         auto_remove=True,
         detach=True,
@@ -79,9 +77,9 @@ def postgres() -> docker.models.containers.Container:
         remove=True,
         name='test_database',
         environment = [
-            'POSTGRES_USER=postgres',
-            'POSTGRES_PASSWORD=cc123',
-            'POSTGRES_DB=character_connect'
+            f'POSTGRES_USER={connection_auth["user"]}',
+            f'POSTGRES_PASSWORD={connection_auth["password"]}',
+            f'POSTGRES_DB={connection_auth["database"]}'
         ]
     )
 
@@ -90,26 +88,7 @@ def postgres() -> docker.models.containers.Container:
     return container
 
 
-def redis() -> docker.models.containers.Container:
-    """function starts a Redis message queue docker container"""
-
-    client: docker.DockerClient = docker.from_env()
-    container: docker.models.containers.Container = client.containers.run(
-        'redis:latest',
-        auto_remove=True,
-        detach=True,
-        ports={'6379/tcp': 6379},
-        remove=True,
-        name='test_redis',
-    )
-
-    return container
-
-
 if __name__ == '__main__':
-        print('starting redis container...')
-        redis_container = redis()
-
         print('starting postgres container...')
         postgres_container = postgres()
         sleep(10)
@@ -129,4 +108,3 @@ if __name__ == '__main__':
             inp = input('press any button to stop database...')
         finally:
             postgres_container.stop()
-            redis_container.stop()
