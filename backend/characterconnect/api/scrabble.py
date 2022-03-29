@@ -1,4 +1,7 @@
+from ctypes.wintypes import CHAR
 from typing import Dict, Optional, List
+
+from backend.characterconnect.api.game_manager import GameManager
 
 points: Dict[str, int] = {
     'A': 1, 'B': 4, 'C': 1, 'D': 2, 'E': 1, 'F': 3, 'G': 2, 'H': 3, 'I': 1, 'J': 8, 'K': 5, 'L': 1, 'M': 3, 'N': 1,
@@ -13,13 +16,17 @@ def calculate_points(word: str) -> int:
     """return the number of points the given word is worth"""
     return sum(points[char] for char in word)
 
-def find_word(arr1, arr2, turn: int):
+def find_word(arr1, arr2, game: GameManager):
     """will search the array for the word and the Database to see if it exists"""
 
     word: str = ''
 
     x: int = 0
     y: int = 0
+
+    # For keeping track of the letter thats been recycled to make the word
+    x3: int = 0
+    y3: int = 0
 
     # For checking if the word is connected to another word
     check1 = 0
@@ -32,6 +39,8 @@ def find_word(arr1, arr2, turn: int):
                     y2 = y
 
                     if y2 < 14 and arr2[x][y2 + 1]:
+                        x3 = x
+                        y3 = y - 1
                         while arr2[x][y2 - 1]:  # It will find where the word starts
                             y2 = y2 - 1
                         while arr2[x][y2]:  # It will start adding the letters to the word, from where it starts
@@ -39,7 +48,7 @@ def find_word(arr1, arr2, turn: int):
                                 word += arr2[x][y2]
 
                             # For checking if the word is connected to another word
-                            if turn > 0:
+                            if game.turn > 0:
                                 if 0 <= x < 14 and arr2[x + 1][y2] or arr2[x - 1][y2]:
                                     check1 = check1 + 1
 
@@ -48,6 +57,8 @@ def find_word(arr1, arr2, turn: int):
                                 break
                     x2 = x
                     if x2 < 14 and arr2[x2 + 1][y]:
+                        x3 = x - 1
+                        y3 = y
                         while arr2[x2 - 1][y]:
                             x2 = x2 - 1
                         while arr2[x2][y]:
@@ -55,7 +66,7 @@ def find_word(arr1, arr2, turn: int):
                                 word += arr2[x2][y]
 
                             # For checking if the word is connected to another word
-                            if turn > 0:
+                            if game.turn > 0:
                                 if 0 <= y < 14 and arr2[x2][y + 1] or arr2[x2][y - 1]:
                                     check2 = check2 + 1
                             x2 = x2 + 1
@@ -72,9 +83,13 @@ def find_word(arr1, arr2, turn: int):
             y = 0
         else:
             break
+ 
+    reusedLetter : CHAR = arr2[x3][y3]
+    game.remove_word(word, reusedLetter)
+
     if len(word) == 0:
         return ""
-    elif (turn > 0) and (check1 == 0) and (check2 == 0):
+    elif (game.turn > 0) and (check1 == 0) and (check2 == 0):
         return ""
     return word
 

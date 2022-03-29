@@ -1,7 +1,9 @@
 from __future__ import annotations
+from ctypes.wintypes import CHAR
 from typing import Dict, List, MutableSet, Tuple, Optional
 import random
 import dataclasses
+from xmlrpc.client import boolean
 
 from .scrabble import find_word, valid_start, construct_empty_board, calculate_points
 from fastapi import WebSocket
@@ -151,7 +153,8 @@ class GameManager:
             if not valid_start(board):
                 raise InvalidStartException()
         # find the word on the Scrabble board, and check if it's valid.
-        word: str = find_word(self.old_board, board, self.turn)
+        game = GameManager(self.id)
+        word: str = find_word(self.old_board, board, game)
         if not word:
             raise InvalidWordException()
         self.old_board = board
@@ -168,6 +171,21 @@ class GameManager:
         """toggle the value of current_player between 0 and 1, returns the new value of current_player."""
         self.current_player = 1 - self.current_player
         return self.current_player
+
+    def remove_tiles(self, word, reusedLetter : CHAR):
+        alreadyRemoved : boolean = False
+        current_player = self._players[self.current_player]
+
+        for char in word:
+            if alreadyRemoved is False:
+                if char in current_player.tiles and char is not reusedLetter:
+                    current_player.tiles.remove(char)
+                elif char in current_player.tiles and char is reusedLetter:
+                    current_player.tiles.remove(char)
+                    alreadyRemoved = True
+            else:
+                if char in current_player.tiles:
+                    current_player.tiles.remove(char)
 
     def asdict(self) -> Dict[str, str]:
         return {
