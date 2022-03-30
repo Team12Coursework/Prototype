@@ -14,8 +14,7 @@
 
                 <div class="flex flex-col space-y-4">
                     <router-link class="button bg-blue-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/images/happy.gif" />NEW GAME</router-link>
-                    <router-link class="button bg-green-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/images/happy.gif" />JOIN GAME</router-link>
-                    <router-link class="button bg-red-400" to='/gamemodes'><img class="feature-for-kids" src="../assets/images/happy.gif" />LEADERBOARD</router-link>
+                    <router-link class="button bg-red-400" to='/leaderboard'><img class="feature-for-kids" src="../assets/images/happy.gif" />LEADERBOARD</router-link>
                 </div>
             </div>
         </div>
