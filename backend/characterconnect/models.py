@@ -35,7 +35,8 @@ class User(Base):
 
     __tablename__ = 'users_tab'
 
-    id       = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
+    leaderboard_points = Column(Integer, default=0)
     username = Column(String(255), unique=True, index=True)
     password = Column(String(255))
     email    = Column(String, unique=True, index=True)
