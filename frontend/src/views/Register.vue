@@ -31,6 +31,10 @@
                 <div v-if="password.length > 0 && passwordErrors" class="flex flex-col">
                     <p class="text-red-400">{{ passwordErrors }}</p>
                 </div>
+                 <div v-if="noInput == null" class="flex flex-col">
+                    <p class="text-red-400">{{ noInput }}</p>
+                </div>
+
                 <button @click="handleRegister" class="cursor-pointer hover:bg-blue-700 rounded p-2 text-white bg-blue-500">Create Account</button>
             </div>
 
@@ -86,9 +90,10 @@ const router = useRouter();
 
 const username = ref("");
 const password = ref("");
+const email = ref("");
 
 function handleRegister(event) {
-    if (passwordErrors.value === null) {
+    if (passwordErrors.value === null && noInput.value === null) {
         store.dispatch("auth/register", {username: username.value, password: password.value}).then(
             () => { router.push("/login") },
             () => { alert("Something went wrong") }
@@ -124,6 +129,15 @@ const passwordErrors = computed(() => {
     }
      if (numbers.test(password.value) === false) {
         return "There must be at least one number used within the password entered"
+    }
+    return null
+})
+const noInput = computed(() => {
+    if (username.value === "") {
+        return "You must enter a username"
+    }
+     if (email.value === "") {
+        return "You must enter a email address"
     }
     return null
 })
