@@ -28,3 +28,8 @@ CREATE TABLE dictionary_mapping_tab(
     FOREIGN KEY(theme_id) REFERENCES themes_tab(id),
     PRIMARY KEY(word, theme_id)
 );
+
+INSERT INTO themes_tab(dictionary, description) VALUES(0, 'all');
+INSERT INTO themes_tab(dictionary, description) VALUES(1, 'banned chat words');
+INSERT INTO themes_tab(dictionary, description) VALUES(2, 'maths wordset');
+INSERT INTO themes_tab(dictionary, description) VALUES(3, 'science wordset');
