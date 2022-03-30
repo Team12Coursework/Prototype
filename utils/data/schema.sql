@@ -1,5 +1,6 @@
 CREATE TABLE users_tab(
-    id SERIAL,
+    id INTEGER GENERATED ALWAYS AS IDENTITY,
+    leaderboard_points INTEGER DEFAULT 0,
     username VARCHAR(255),
     password VARCHAR(255),
     email VARCHAR,
@@ -15,15 +16,15 @@ CREATE TABLE words_tab(
 );
 
 CREATE TABLE themes_tab(
-    id SERIAL,
-    dictionary INT,
+    id INTEGER GENERATED ALWAYS AS IDENTITY,
+    dictionary INTEGER,
     description VARCHAR,
     PRIMARY KEY(id)
 );
 
 CREATE TABLE dictionary_mapping_tab(
     word VARCHAR,
-    theme_id INT,
+    theme_id INTEGER,
     FOREIGN KEY(word) REFERENCES words_tab(word),
     FOREIGN KEY(theme_id) REFERENCES themes_tab(id),
     PRIMARY KEY(word, theme_id)
