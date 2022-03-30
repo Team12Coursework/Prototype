@@ -1,28 +1,29 @@
 <template>
-    <navbar/>
+    <main class="flex flex-col h-screen">
+        <navbar/>
 
-    <main class="flex justify-center w-full">
-        <div class="w-full max-w-7xl flex flex-col space-y-12 items-center">
-            <div class="flex flex-col items-center pt-6">
-                <h1 class="text-6xl font-bold">Lobby</h1>
-
-                <p class="mt-4">Invite Friends with the link below</p>
-                <p class="rounded border mt-4 px-4 py-2">localhost:8080{{ link.href }}</p>
-
-                <router-link class="rounded p-2 bg-green-400" :to="link">Go</router-link>
+        <div class="w-full grow flex flex-col items-center justify-center">
+            <div class="w-full max-w-screen-md flex flex-col items-center space-y-4">
+                <div>
+                    <h1 class="mt-4 text-3xl font-semibold">Invite Friends with the link below</h1>
+                    <p class="text-sm italic text-gray-500">Please copy this link into the navigation bar on your browser to join the game</p>
+                </div>
+                <p class="rounded border mt-4 px-4 py-2 text-center">http://{{ windowLoc }}{{ link.href }}</p>
             </div>
         </div>
     </main>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 
 import Navbar from "@/components/Navbar.vue";
 
 const link = ref("");
 const router = useRouter()
+
+const windowLoc = computed(() => window.location.host);
 
 onMounted(() => {
     let epoch_time = Date.now();
