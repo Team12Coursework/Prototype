@@ -74,19 +74,19 @@ async def handle_perk_error(callback: Callable[Any, Any], connection_manager, we
         await connection_manager.send_personal_message(json.dumps({"type": "updateError", "message": str(error)}), websocket)
 
 
-def filter_message(data: Dict[str, str]) -> Dict[str, str]:
+def filter_message(data: Dict[str, str], database) -> Dict[str, str]:
     """function to filter chat messages"""
-    bannedWords = ["shit","fuck","crap","bitch"] # will add more words to this
+    banned_words = get_wordset(database, 2)
 
     chatMessage = data.get('message')
     censoredMessageList = []
 
     for word in chatMessage.split():
-        if word in bannedWords:
-            censoredMessageList.append("[redacted]")
+        if word.lower() in banned_words:
+            censoredMessageList.append("****")
         else:
-         censoredMessageList.append(word)
-    
+            censoredMessageList.append(word)
+
     censoredMessage = " ".join(censoredMessageList)
     data.update({'message': censoredMessage})
     return json.dumps(data)
@@ -145,7 +145,7 @@ async def websocket_endpoint(websocket: WebSocket, room: str, database = Depends
             if decoded['type'] == 'playerJoin':
                 await process_room_join(websocket, decoded, room, database)
             elif decoded['type'] == 'message':
-                msg = filter_message(decoded)
+                msg = filter_message(decoded, database)
                 await connection_manager.broadcast(room, msg)
             elif decoded['type'] == 'gameUpdate':
                 state: Dict[str, str] = process_next_turn(room, decoded['board'], database)
