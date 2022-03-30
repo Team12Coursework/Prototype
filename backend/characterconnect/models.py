@@ -22,7 +22,7 @@ class DictionaryMapping(Base):
     __tablename__: str = 'dictionary_mapping_tab'
 
     @declared_attr
-    def word_id(cls) -> Column:
+    def word(cls) -> Column:
         return Column(String, ForeignKey('words_tab.word'), primary_key=True)
 
     @declared_attr

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Dict, List, Optional
 import dataclasses
+import logging
 
 from .scrabble import find_word, valid_start, construct_empty_board, calculate_points, difference
 from fastapi import WebSocket
@@ -50,7 +51,7 @@ class Player:
 class GameManager:
     """GameManager class takes care of all general game functions.
     The asdict function represents the entire game state, and should be sent to the client on every update"""
-    def __init__(self, game_id: int) -> None:
+    def __init__(self, game_id: int, wordset: int = 1) -> None:
         self.id: int = game_id
         self.tileset = TileManager()
         # manage the players with an integer bounded to 0-1.
@@ -64,6 +65,7 @@ class GameManager:
         self.winner: Optional[int] = None
         self._players: List[Optional[Player]] = [None, None]
         self.num_tiles: int = 7
+        self.wordset = wordset
 
     @property
     def full(self) -> bool:
@@ -105,25 +107,31 @@ class GameManager:
             player.tiles = self.tileset.draw(self.num_tiles)
         self.game_running = True
 
-    def next_turn(self, board: List[List[str]]) -> None:
+    def next_turn(self, board: List[List[str]], valid_words: list[str]) -> None:
         """advance the game state by a single turn, mutate the game board with the new word.
         this function will raise an InvalidGameStateException if the user places an invalid word.
         raising this exception will ensure that the board is not mutated in any way, and it will remain
         on the current player's turn."""
+        logger = logging.getLogger("uvicorn.next_turn")
         # edge case that it's the first turn and the word placed isn't in the right place on the board
         if self.turn == 0:
             if not valid_start(board):
+                logger.warning("invalid start")
                 raise InvalidStartException()
         # find the word on the Scrabble board, and check if it's valid.
         word = find_word(self.old_board, board, self.turn)
-        placed = difference(self.old_board, board)
+        logger.info("%s placed", word)
         if not word:
+            logger.warning("no word placed")
             raise InvalidWordException()
+        if word.lower() not in valid_words:
+            logger.warning("invalid word placed")
+            raise InvalidWordException("invalid word placed")
+        placed = difference(self.old_board, board)
         self.old_board = board
         self.board = board
         current_player = self.players[self.current_player]
         current_player.points += calculate_points(word)
-        print("word:", word, "placed:", placed, "current player tiles:", current_player.tiles)
         # if the player didn't place the letter (i.e. used a letter that was already on the board)
         # don't try and remove that letter from their tileset.
         for char in placed:
