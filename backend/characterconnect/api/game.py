@@ -1,6 +1,7 @@
 import datetime
 import json
 from typing import Callable, Dict, List, Optional, Any
+import logging
 
 from fastapi import APIRouter, WebSocket, Depends
 from starlette.websockets import WebSocketDisconnect
@@ -32,27 +33,36 @@ def token_valid(token: str, database) -> bool:
         3.1) check that the given username is valid
         3.2) check that the given token isn't expired
     """
+    logger = logging.getLogger("uvicorn.token_valid")
     # 1) check if the token is a valid JWT token
     try:
         payload = jwt.decode(token, config.SECRET_KEY, algorithms=[config.ALGORITHM])
     except JWTError:
+        logger.warning("JWT decode error")
         return False
 
     # 2) check if the token contains a username
     username: str | None = payload.get('sub')
     if username is None:
+        logger.warning("JWT username is None")
         return False
 
     # 3.2) check the token is expired, this check is done before the database query
     # as if this fails, it avoids the overhead of making a database call.
     exp = payload.get("exp")
-    if exp < datetime.utcnow():
+    if exp is None:
+        logger.warning("JWT exp is None")
+        return False
+    if datetime.datetime.fromtimestamp(exp) < datetime.datetime.utcnow():
+        logger.warning("JWT is expired")
         return False
 
     # 3.1) check if the token contains a valid username
     user = database.query(User).where(username == User.username).first()
     if user is None:
+        logger.warning("JWT user does not exist in database")
         return False
+    logger.info("valid JWT received")
     return True
 
 async def handle_perk_error(callback: Callable[Any, Any], connection_manager, websocket, *args) -> None:
@@ -92,7 +102,7 @@ def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[st
         return {'type': 'updateError', 'message': 'invalid word placed'}
 
 
-async def process_room_join(websocket, decoded, room_id: str, database = Depends(get_database)) -> None:
+async def process_room_join(websocket, decoded, room_id: str, database) -> None:
     """function to process a player joining the room"""
     # TODO: this will cause an issue with the game start. If this player gets
     # removed from the game, the game still won't be able to start. This isn't
@@ -119,7 +129,7 @@ async def process_room_join(websocket, decoded, room_id: str, database = Depends
 
 
 @router.websocket("/ws/{room}")
-async def websocket_endpoint(websocket: WebSocket, room: str):
+async def websocket_endpoint(websocket: WebSocket, room: str, database = Depends(get_database)):
     """method to handle WebSocket events from frontend"""
     await websocket.accept()
     try:
@@ -127,7 +137,7 @@ async def websocket_endpoint(websocket: WebSocket, room: str):
             data: str = await websocket.receive_text()
             decoded = json.loads(data)
             if decoded['type'] == 'playerJoin':
-                await process_room_join(websocket, decoded, room)
+                await process_room_join(websocket, decoded, room, database)
             elif decoded['type'] == 'message':
                 msg = filter_message(decoded)
                 await connection_manager.broadcast(room, msg)

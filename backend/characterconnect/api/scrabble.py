@@ -17,7 +17,7 @@ def difference(one: list[list[str | None]], two: list[list[str | None]]) -> list
     return out
 
 def construct_empty_board() -> List[List[Optional[str]]]:
-    """construct a 15x15 NumPy array to represent the board"""
+    """construct a 15x15 array to represent the board"""
     return [[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None] for _ in range(15)]
 
 def calculate_points(word: str) -> int:

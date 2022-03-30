@@ -31,6 +31,7 @@
                             <button @click="activatePerk('twoRandomLetters')" class="cursor-pointer p-2 bg-gray-400 hover:bg-gray-300 duration-300 w-full rounded text-white">Add Two Tiles</button>
                             <button @click="activatePerk('changeLetters')" class="cursor-pointer p-2 bg-gray-400 hover:bg-gray-300 duration-300 w-full rounded text-white">Shuffle Tiles</button>
                         </div>
+                        <button @click="forefeit" class="cursor-pointer p-2 bg-red-500 hover:bg-red-300 duration-300 w-full rounded text-white">Forefeit</button>
                     </div>
                 </div>
             </div>
@@ -70,6 +71,11 @@ function activatePerk(perkName){
         subtype: perkName,
     }))
 };
+
+function forefeit() {
+    socket.close();
+    router.push("/gameover?won=false");
+}
 
 function squareId(x, y) {
     return `${(x-1).toString()},${(y-1).toString()}`
@@ -126,8 +132,19 @@ function updateError(data) {
 };
 
 function updateGame(data) {
+    let won = false;
     if (data.winner !== null) {
-        router.push({ name: "GameOver" });
+        let i = 0;
+        for (let player of data.players) {
+            if (player.name == user.value) {
+                break;
+            }
+            i++;
+        }
+        if (data.winner === i) {
+            won = true;
+        }
+        router.push({ name: "GameOver", params: { won: won } });
     }
     gameData.value = data;
     resetBoard();
