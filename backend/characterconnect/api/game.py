@@ -8,6 +8,7 @@ from starlette.websockets import WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 from jose import JWTError, jwt
 from functools import lru_cache
+from sqlalchemy import update
 
 from .connection_manager import ConnectionManager
 from .dependencies import get_database
@@ -107,6 +108,12 @@ def process_next_turn(room_id: str, board: List[List[Optional[str]]], database) 
     except InvalidWordException as error:
         return {'type': 'updateError', 'message': 'invalid word placed'}
 
+async def process_winner(database, winner: str) -> None:
+    database.execute(
+        update(User)
+        .where(User.username == winner)
+        .values(leaderboard_points=User.leaderboard_points + 10))
+    database.commit()
 
 async def process_room_join(websocket, decoded, room_id: str, database) -> None:
     """function to process a player joining the room"""
@@ -148,8 +155,10 @@ async def websocket_endpoint(websocket: WebSocket, room: str, database = Depends
                 msg = filter_message(decoded, database)
                 await connection_manager.broadcast(room, msg)
             elif decoded['type'] == 'gameUpdate':
-                state: Dict[str, str] = process_next_turn(room, decoded['board'], database)
+                state: dict[str, str] = process_next_turn(room, decoded['board'], database)
                 if state['type'] == 'gameUpdate':
+                    if state["winner"] is not None:
+                        await process_winner(database, state["players"][state["winner"]]["name"])
                     await connection_manager.broadcast(room, json.dumps(state))
                 elif state['type'] == 'updateError':
                     await connection_manager.send_personal_message(json.dumps(state), websocket)
@@ -168,6 +177,10 @@ async def websocket_endpoint(websocket: WebSocket, room: str, database = Depends
         print("disconnect raised in room", room)
         await connection_manager.disconnect(room, websocket)
         print(f'player disconnected')
-        await connection_manager.broadcast(room, json.dumps(_room.asdict()))
+        game_state = _room.asdict()
+        await connection_manager.broadcast(room, json.dumps(game_state))
+        # since one player has disconnected by this point, the winner is always the
+        # remaining player in the lobby
+        await process_winner(database, game_state["players"][0]["name"])
     except AssertionError:
         print("player forcefully disconnected")

@@ -87,3 +87,7 @@ def register(user: schemas.User, database = Depends(get_database)):
     user_model: User = User(username=user.username, password=pwd)
     database.add(user_model)
     database.commit()
+
+@router.get("/leaderboard")
+def get_leaderboard(database=Depends(get_database)):
+    return database.query(User.username, User.email, User.leaderboard_points).order_by(User.leaderboard_points.desc()).limit(10).all()
