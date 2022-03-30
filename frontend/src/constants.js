@@ -7,7 +7,10 @@ const baseURL = DEBUG
     : "";
 
 const baseWebSocketURL = DEBUG
-    ? "ws://localhost:8000"
+//The secure wss:// protocol has been used over ws:// as ws:// is an insecure method of transport
+//WSS is encrpyted and provides protection against man-in-the-middle-attacks, therefore is more safer to use
+//As the transport is secured using this protocol, it protects the websockets from multiple types of attacks
+    ? "wss://localhost:8000"
     : "";
 
 export { baseURL, baseWebSocketURL };
