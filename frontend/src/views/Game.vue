@@ -161,6 +161,7 @@ function receiveChatMessage(message) {
 
 function handleMessage(event) {
     let data = JSON.parse(event.data);
+    console.log(data);
     switch(data.type) {
         case "gameUpdate":
             console.log(data);
@@ -171,6 +172,11 @@ function handleMessage(event) {
             break;
         case "updateError":
             updateError(data);
+            break;
+        case "authError":
+            console.log("recieved authError");
+            alert("authentication error, unable to join game");
+            router.push({ name: "Logout" });
             break;
     }
 };
@@ -200,8 +206,11 @@ const piecePlaced = computed(() => {
 const user = computed(() => {
     // function to decode the JWT token given to the client at login.
     // this function will decode the JWT and extract the username which will be used to play the game.
-
-    var base64Url = store.state.auth.user.accessToken.split('.')[1];
+    try {
+        var base64Url = store.state.auth.user.accessToken.split('.')[1];
+    } catch (TypeError) {
+        return null;
+    }
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
@@ -211,10 +220,17 @@ const user = computed(() => {
 });
 
 onMounted(() => {
+    if (user.value === null) {
+        console.warn("user token invalid");
+        router.push({ name: "Logout" });
+        return
+    };
+
     socket = new WebSocket(`${baseWebSocketURL}/api/game/ws/${route.params.game_id}`);
     socket.addEventListener("open", () => {
         socket.send(JSON.stringify({
             type: "playerJoin",
+            token: store.state.auth.user.accessToken,
             player: user.value,
         }))
     })
