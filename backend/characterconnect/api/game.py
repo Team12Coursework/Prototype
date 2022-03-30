@@ -7,12 +7,13 @@ from fastapi import APIRouter, WebSocket, Depends
 from starlette.websockets import WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 from jose import JWTError, jwt
+from functools import lru_cache
 
 from .connection_manager import ConnectionManager
 from .dependencies import get_database
 from .game_manager import GameManager, Player, InvalidWordException
 from ..core.config import config
-from ..models import User
+from ..models import User, DictionaryMapping
 
 
 router = APIRouter()
@@ -75,7 +76,6 @@ async def handle_perk_error(callback: Callable[Any, Any], connection_manager, we
 
 def filter_message(data: Dict[str, str]) -> Dict[str, str]:
     """function to filter chat messages"""
-    
     bannedWords = ["shit","fuck","crap","bitch"] # will add more words to this
 
     chatMessage = data.get('message')
@@ -91,12 +91,18 @@ def filter_message(data: Dict[str, str]) -> Dict[str, str]:
     data.update({'message': censoredMessage})
     return json.dumps(data)
 
+@lru_cache
+def get_wordset(database, wordset: int) -> list[str]:
+    words = database.query(DictionaryMapping.word).where(DictionaryMapping.theme_id == wordset).all()
+    return [w[0] for w in words]
 
-def process_next_turn(room_id: str, board: List[List[Optional[str]]]) -> Dict[str, str]:
+def process_next_turn(room_id: str, board: List[List[Optional[str]]], database) -> Dict[str, str]:
     """process the next turn, this function doesn't return anything to the client"""
     game: GameManager = connection_manager.connected[room_id]
+    words = get_wordset(database, game.wordset)
+
     try:
-        game.next_turn(board)
+        game.next_turn(board, words)
         return game.asdict()
     except InvalidWordException as error:
         return {'type': 'updateError', 'message': 'invalid word placed'}
@@ -142,7 +148,7 @@ async def websocket_endpoint(websocket: WebSocket, room: str, database = Depends
                 msg = filter_message(decoded)
                 await connection_manager.broadcast(room, msg)
             elif decoded['type'] == 'gameUpdate':
-                state: Dict[str, str] = process_next_turn(room, decoded['board'])
+                state: Dict[str, str] = process_next_turn(room, decoded['board'], database)
                 if state['type'] == 'gameUpdate':
                     await connection_manager.broadcast(room, json.dumps(state))
                 elif state['type'] == 'updateError':
